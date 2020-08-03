@@ -22,11 +22,15 @@ option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.keepalive";
 
 // Next: 1
+// The request message for a keepalive ping
 message KeepaliveRequest {}
 
 // Next: 1
+// The response message for a keepalive ping
 message KeepaliveResponse {}
 
+// The keepalive service
 service Keepalive {
+    // Pings a server to ensure that it remains active
     rpc Ping(KeepaliveRequest) returns (KeepaliveResponse);
 }
