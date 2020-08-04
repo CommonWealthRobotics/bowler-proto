@@ -84,11 +84,34 @@ message CredentialsResponse {
     // The ID of the request which is being fulfilled
     int64 request_id = 1;
 
+    // The credentials to use
+    oneof credentials {
+        // Username and password pair
+        BasicCredentials basic = 2;
+
+        // OAuth
+        OAuthCredentials oauth = 3;
+    }
+}
+
+// Next: 3
+// Credentials implementation for a username and password pair
+message BasicCredentials {
     // The username
-    string username = 2;
+    string username = 1;
 
     // The password
-    string password = 3;
+    string password = 2;
+
+    // Optional 2FA response
+    string two_factor = 3;
+}
+
+// Next: 2
+// Credentials implementation for OAuth
+message OAuthCredentials {
+    // The OAuth token
+    string token = 1;
 }
 
 // Next: 7
