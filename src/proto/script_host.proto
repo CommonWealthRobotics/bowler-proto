@@ -1,0 +1,185 @@
+/**
+ * Copyright 2020 Nick Mertin
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package bowler.script_host;
+
+import "git_f_s.proto";
+
+option java_multiple_files = true;
+option java_package = "com.commonwealthrobotics.proto.script_host";
+
+// Next: 5
+// The client message type
+message SessionClientMessage {
+    // The content of the message
+    oneof message {
+        // Request to run a script
+        RunRequest run_request = 1;
+
+        // Response to a confirmation request
+        ConfirmationResponse confirmation_response = 2;
+
+        // Response to a credentials request
+        CredentialsResponse credentials_response = 3;
+
+        // Error in execution of a request
+        RequestError error = 4;
+    }
+}
+
+// Next: 5
+// Client message to run a script
+message RunRequest {
+    // The unique ID of the request
+    int64 request_id = 1;
+
+    // The file to run
+    bowler.git_f_s.FileSpec file = 2;
+
+    // Dev'd dependencies
+    repeated bowler.git_f_s.ProjectSpec devs = 3;
+
+    // Script environment variables
+    map<string, string> environment = 4;
+}
+
+// Next: 3
+// Client message to respond to a confirmation request
+message ConfirmationResponse {
+    // The ID of the request
+    int64 request_id = 1;
+
+    // The value of the response
+    ConfirmationValue response = 2;
+}
+
+// Next: 2
+// Value of a confirmation response
+enum ConfirmationValue {
+    // User responded 'Allow'
+    ALLOWED = 0;
+
+    // User responded 'Deny'
+    DENIED = 1;
+}
+
+// Next: 4
+// Client message to fulfill a credentials request
+message CredentialsResponse {
+    // The ID of the request which is being fulfilled
+    int64 request_id = 1;
+
+    // The username
+    string username = 2;
+
+    // The password
+    string password = 3;
+}
+
+// Next: 7
+// The server message type
+message SessionServerMessage {
+    oneof message {
+        // Message to indicate a new task starting
+        NewTask new_task = 1;
+
+        // Message to indicate an update to the status of a task
+        TaskUpdate task_update = 2;
+
+        // Message to indicate that a task completed
+        TaskEnd task_end = 3;
+
+        // Request for user confirmation
+        ConfirmationRequest confirmation_request = 4;
+
+        // Request for user credentials
+        CredentialsRequest credentials_request = 5;
+
+        // Error in execution of a request
+        RequestError error = 6;
+    }
+}
+
+// Next: 4
+// Server message to indicate a new task starting
+message NewTask {
+    // The ID of the request that created the task, if it was created on client request
+    int64 request_id = 1;
+
+    // The description of the task
+    string description = 2;
+
+    // The initial status of the task
+    TaskUpdate task = 3;
+}
+
+// Next: 3
+// Server message to indicate an update to the status of a task
+message TaskUpdate {
+    // The unique ID of the task
+    int64 task_id = 1;
+
+    // The progress of the task
+    float progress = 2;
+}
+
+// Next: 2
+// Server message to indicate that a task completed
+message TaskEnd {
+    // The unique ID of the task
+    int64 task_id = 1;
+}
+
+// Next: 2
+// Server message to request user confirmation
+message ConfirmationRequest {
+    // The unique ID of the request
+    int64 request_id = 1;
+
+    // The human-readable description of the action
+    string description = 2;
+}
+
+// Next: 4
+// Server message to request user credentials
+message CredentialsRequest {
+    // The unique ID of the request
+    int64 request_id = 1;
+
+    // The unique ID of the task for which the credentials are being requested
+    int64 task_id = 2;
+
+    // The remote for which credentials are being requested
+    string remote = 3;
+}
+
+// Next: 3
+// Client or server message to report an error in response to a request
+message RequestError {
+    // The unique ID of the request
+    int64 request_id = 1;
+
+    // The human-readable description of the error
+    string description = 2;
+}
+
+// The script host service
+service ScriptHost {
+    // Initiate a script session with the kernel
+    rpc Session(stream SessionClientMessage) returns (stream SessionServerMessage);
+}
