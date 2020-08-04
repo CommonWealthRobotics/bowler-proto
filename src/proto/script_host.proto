@@ -94,7 +94,7 @@ message CredentialsResponse {
     }
 }
 
-// Next: 3
+// Next: 4
 // Credentials implementation for a username and password pair
 message BasicCredentials {
     // The username
@@ -168,7 +168,7 @@ message TaskEnd {
     int64 task_id = 1;
 }
 
-// Next: 2
+// Next: 3
 // Server message to request user confirmation
 message ConfirmationRequest {
     // The unique ID of the request
