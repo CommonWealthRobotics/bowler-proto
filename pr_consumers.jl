@@ -1,7 +1,7 @@
 using CSV
 using DataFrames
 
-const our_url = "git@github.com:CommonWealthRobotics/bowler-proto.git"
+const our_url = "https://github.com/CommonWealthRobotics/bowler-proto.git"
 const required_tag_prefix = "refs/heads/" # TODO: Revert to "refs/tags/v"
 
 # Derive our tag from the ref
