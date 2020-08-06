@@ -1,6 +1,10 @@
 using CSV
 using DataFrames
 
+if isempty(ENV["TOKEN"])
+    throw(ErrorException("Token cannot be empty"))
+end
+
 const our_url = "git@github.com:CommonWealthRobotics/bowler-proto.git"
 const required_tag_prefix = "refs/heads/" # TODO: Revert to "refs/tags/v"
 
