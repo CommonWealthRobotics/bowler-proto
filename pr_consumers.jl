@@ -51,7 +51,7 @@ for row in eachrow(consumers)
         run(`git push --force -u origin $branch_name`)
 
         # Open a PR
-        run(`curl --request POST --url https://api.github.com/repos/$user_name/$repo_name/pulls --header 'Authorization: token $(ENV["TOKEN"])' --data '{"title":"Update bowler-proto", "head":"$branch_name", "base":"master"}'`)
+        run(`curl -u 'BowlerBot:$(ENV["TOKEN"])' --request POST --url https://api.github.com/repos/$user_name/$repo_name/pulls --data '{"title":"Update bowler-proto", "head":"$branch_name", "base":"master"}'`)
     finally
         cd(pwd_before)
     end
