@@ -4,13 +4,13 @@ on:
   push:
     branches: [master]
 
-#     paths: 
+#     paths:
 #       - "**.proto"
 
 jobs:
   PR_Consumers:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v2.3.1
 
@@ -20,6 +20,11 @@ jobs:
 
       - name: Run Script
         run: |
-          julia --color=yes pr_consumers.jl
+          julia --color=yes -e '
+          import Pkg
+          Pkg.activate(".")
+          Pkg.instantiate()
+          include(pr_consumers.jl)
+          '
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
