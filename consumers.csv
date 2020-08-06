@@ -1,2 +1,2 @@
 git_url,user_name,repo_name
-https://github.com/CommonWealthRobotics/bowler-kernel.git,CommonWealthRobotics,bowler-kernel
+git@github.com:CommonWealthRobotics/bowler-kernel.git,CommonWealthRobotics,bowler-kernel
