@@ -44,7 +44,7 @@ for row in eachrow(consumers)
 
         run(`git commit -am "Update bowler-proto to $our_tag"`)
 
-        run(`curl --request POST --url https://api.github.com/repos/$user_name/$repo_name/dispatches --header 'authorization: Bearer $(ENV["TOKEN"])' --header 'content-type: application/json' --data '{"event_type":"update-bowler-proto"}'`)
+        run(`curl --request POST --url https://api.github.com/repos/$user_name/$repo_name/dispatches --header 'Authorization: token $(ENV["TOKEN"])' --header 'content-type: application/json' --data '{"event_type":"update-bowler-proto"}'`)
     finally
         cd(pwd_before)
     end
