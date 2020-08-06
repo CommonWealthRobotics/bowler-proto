@@ -30,4 +30,4 @@ jobs:
           include("pr_consumers.jl")
           '
         env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ${{ secrets.BOWLERBOT_PAT }}
