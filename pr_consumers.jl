@@ -7,7 +7,7 @@ const required_tag_prefix = "refs/heads/" # TODO: Revert to "refs/tags/v"
 # Derive our tag from the ref
 github_ref = ENV["GITHUB_REF"]
 our_tag = if startswith(github_ref, required_tag_prefix)
-    github_ref[last(findfirst(required_tag_prefix, github_ref)):end]
+    github_ref[last(findfirst(required_tag_prefix, github_ref))+1:end]
 else
     throw(ErrorException("Cannot update consumers with invalid tag name: $github_ref"))
 end
