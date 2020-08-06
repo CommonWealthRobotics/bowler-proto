@@ -24,7 +24,7 @@ jobs:
           import Pkg
           Pkg.activate(".")
           Pkg.instantiate()
-          include(pr_consumers.jl)
+          include("pr_consumers.jl")
           '
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
