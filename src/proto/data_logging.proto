@@ -29,21 +29,14 @@ message ListSourcesRequest {}
 // The response message for listing sources
 message ListSourcesResponse {
     // The available sources
-    map<string, SourceMetadata> sources = 1;
-}
-
-// Next: 2
-// The metadata of an available source
-message SourceMetadata {
-    // The human-readable description of the source 
-    string description = 1;
+    repeated string sources = 1;
 }
 
 // Next: 2
 // The request message for watching a source
 message WatchRequest {
     // The ID of the source to watch
-    string source_id = 1;
+    string source_name = 1;
 }
 
 // Next: 3
@@ -133,5 +126,5 @@ service DataLogging {
     rpc Watch(WatchRequest) returns (stream WatchResponse);
 
     // Watches the state vector
-    rpc WatchState(WatchStateRequest) returns (WatchStateResponse);
+    rpc WatchState(WatchStateRequest) returns (stream WatchStateResponse);
 }
