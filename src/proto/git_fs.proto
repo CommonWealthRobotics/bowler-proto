@@ -29,8 +29,8 @@ message ProjectSpec {
     // The Git commit-ish identifying the revision of the repository
     string revision = 2;
 
-    // A set of local changes to the project
-    repeated FilePatch patches = 3;
+    // A Git patch file containing local changes
+    bytes patch = 3;
 }
 
 // Next: 3
@@ -41,54 +41,4 @@ message FileSpec {
 
     // The relative path to the file within the repository
     string path = 2;
-}
-
-// Next: 5
-// The description of local modifications to a file within a repository
-message FilePatch {
-    // The relative path of the file within the repository
-    string path = 1;
-
-    // The content of the patch
-    oneof patch_desc {
-        // Add a new file
-        NewFilePatch new_file = 2;
-
-        // Delete an existing file
-        DeleteFilePatch delete_file = 3;
-
-        // Modify an existing file
-        ModifyFilePatch modify_file = 4;
-    }
-}
-
-// Next: 2
-// The description of a newly created file
-message NewFilePatch {
-    // The file content
-    bytes content = 1;
-}
-
-// Next: 1
-// The description of a deleted file
-message DeleteFilePatch {}
-
-// Next: 2
-// The description of a modified file
-message ModifyFilePatch {
-    // The modifications to the file; these are applied in order
-    repeated Modification modifications = 1;
-}
-
-// Next: 4
-// The description of a modification to a file
-message Modification {
-    // The offset of the modified span
-    uint64 offset = 1;
-
-    // The length of the original data
-    uint64 old_length = 2;
-
-    // The new data
-    bytes new_data = 3;
 }
