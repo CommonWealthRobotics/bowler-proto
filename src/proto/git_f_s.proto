@@ -14,11 +14,10 @@
 
 syntax = "proto3";
 
-package bowler.git_fs;
+package bowler.git_f_s;
 
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.gitfs";
-option java_outer_classname = "GitFSOuterClass";
 
 // Next: 4
 // The host-agnostic identifier for a project
