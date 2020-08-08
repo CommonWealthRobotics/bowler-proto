@@ -18,7 +18,7 @@ package bowler.git_fs;
 
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.gitfs";
-option java_outer_classname = "GitFS";
+option java_outer_classname = "GitFSOuterClass";
 
 // Next: 4
 // The host-agnostic identifier for a project
@@ -41,4 +41,17 @@ message FileSpec {
 
     // The relative path to the file within the repository
     string path = 2;
+}
+
+// Next: 1
+// The request message for a clearing the GitFS cache
+message ClearCacheRequest {}
+
+// Next: 1
+// The response message for a clearing the GitFS cache
+message ClearCacheResponse {}
+
+// The GitFS service
+service GitFS {
+    rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse);
 }
