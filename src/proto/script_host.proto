@@ -16,7 +16,7 @@ syntax = "proto3";
 
 package bowler.script_host;
 
-import "git_f_s.proto";
+import "git_fs.proto";
 
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.script_host";
@@ -47,10 +47,10 @@ message RunRequest {
     int64 request_id = 1;
 
     // The file to run
-    bowler.git_f_s.FileSpec file = 2;
+    bowler.git_fs.FileSpec file = 2;
 
     // Dev'd dependencies
-    repeated bowler.git_f_s.ProjectSpec devs = 3;
+    repeated bowler.git_fs.ProjectSpec devs = 3;
 
     // Script environment variables
     map<string, string> environment = 4;

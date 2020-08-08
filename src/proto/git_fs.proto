@@ -14,10 +14,11 @@
 
 syntax = "proto3";
 
-package bowler.git_f_s;
+package bowler.git_fs;
 
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.gitfs";
+option java_outer_classname = "GitFS";
 
 // Next: 4
 // The host-agnostic identifier for a project
@@ -25,7 +26,7 @@ message ProjectSpec {
     // The Git remote path containing the project
     string repo_remote = 1;
 
-    // The Git commit-ish identifying the Git revision of the file
+    // The Git commit-ish identifying the revision of the repository
     string revision = 2;
 
     // A set of local changes to the project

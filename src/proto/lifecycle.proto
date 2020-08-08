@@ -43,5 +43,5 @@ service Lifecycle {
     rpc Keepalive(KeepaliveRequest) returns (KeepaliveResponse);
 
     // Queries the kernel's JDWB port
-    rpc DebugPort (DebugPortRequest) returns (DebugPortResponse);
+    rpc DebugPort(DebugPortRequest) returns (DebugPortResponse);
 }
