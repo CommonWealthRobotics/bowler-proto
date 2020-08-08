@@ -1,0 +1,130 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package bowler.data_logging;
+
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "com.commonwealthrobotics.proto.data_logging";
+
+// Next: 1
+// The request message for listing sources
+message ListSourcesRequest {}
+
+// Next: 2
+// The response message for listing sources
+message ListSourcesResponse {
+    // The available sources
+    repeated string sources = 1;
+}
+
+// Next: 2
+// The request message for watching a source
+message WatchRequest {
+    // The ID of the source to watch
+    string source_name = 1;
+}
+
+// Next: 3
+// The response message for watching a source
+message WatchResponse {
+    // The timestamp of the data entry
+    google.protobuf.Timestamp timestamp = 1;
+
+    // The value of the source
+    Value value = 2;
+}
+
+// Next: 12
+// Wrapper message for the source union
+message Value {
+    // The value
+    oneof value {
+        // A 32-bit signed integer value
+        fixed32 int32 = 1;
+
+        // A 64-bit signed integer value
+        fixed64 int64 = 2;
+
+        // A 32-bit floating point value
+        float float = 3;
+
+        // A 64-bit floating point value
+        double double = 4;
+
+        // A unicode character
+        uint32 char = 5;
+
+        // A boolean value
+        bool bool = 6;
+
+        // A string value
+        string string = 7;
+
+        // A 3D frame transformation
+        bytes frame_transform = 8;
+
+        // A list of values
+        List list = 9;
+
+        // A map of strings to values
+        Map map = 10;
+
+        // An arbitrary bytestring
+        bytes bytes = 11;
+    }
+}
+
+// Next: 2
+// Wrapper message for a list of values
+message List {
+    // The values in the list
+    repeated Value items = 1;
+}
+
+// Next: 2
+// Wrapper message for a map of strings to values
+message Map {
+    // The keys and values in the map
+    map<string, Value> items = 1;
+}
+
+// Next: 1
+// The request message for watching the state vector
+message WatchStateRequest {}
+
+// Next: 3
+// The response message for watching the state vector
+message WatchStateResponse {
+    // The timestamp of the state vector
+    google.protobuf.Timestamp timestamp = 1;
+
+    // The components of the state vector
+    repeated float components = 2;
+}
+
+// The data logging service
+service DataLogging {
+    // Lists the available data sources
+    rpc ListSources(ListSourcesRequest) returns (ListSourcesResponse);
+
+    // Watches a particular data source
+    rpc Watch(WatchRequest) returns (stream WatchResponse);
+
+    // Watches the state vector
+    rpc WatchState(WatchStateRequest) returns (stream WatchStateResponse);
+}
