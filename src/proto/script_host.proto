@@ -17,6 +17,7 @@ syntax = "proto3";
 package bowler.script_host;
 
 import "git_f_s.proto";
+import "robot_config.proto";
 
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.script_host";
@@ -38,8 +39,8 @@ message SessionClientMessage {
         // Response to a 2FA request
         TwoFactorResponse two_factor_response = 4;
 
-        // An update to the set of local changes to the repository
-        NewChanges new_changes = 6;
+        // An update to the robot configuration
+        NewConfig new_config = 6;
 
         // Error in execution of a request
         RequestError error = 5;
@@ -126,10 +127,10 @@ message TwoFactorResponse {
 }
 
 // Next: 2
-// Client message to update the local changes to the repository
-message NewChanges {
-    // A Git patch containing the update
-    bowler.git_f_s.Patch patch = 1;
+// Client message to update the robot configuration
+message NewConfig {
+    // The new robot configuration object
+    bowler.robot_config.RobotConfig config = 1;
 }
 
 // Next: 9
