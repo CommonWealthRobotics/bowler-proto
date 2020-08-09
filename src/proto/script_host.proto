@@ -132,7 +132,7 @@ message NewChanges {
     bytes patch = 1;
 }
 
-// Next: 8
+// Next: 9
 // The server message type
 message SessionServerMessage {
     oneof message {
@@ -153,6 +153,9 @@ message SessionServerMessage {
 
         // Request for 2FA code
         TwoFactorRequest two_factor_request = 6;
+
+        // Output files dump
+        ScriptOutput script_output = 8;
 
         // Error in execution of a request
         RequestError error = 7;
@@ -220,6 +223,13 @@ message TwoFactorRequest {
 
     // User-readable request description
     string description = 2;
+}
+
+// Next: 2
+// Server message containing script output files
+message ScriptOutput {
+    // Tarball containing the output files
+    bytes tarball = 1;
 }
 
 // Next: 3
