@@ -16,8 +16,6 @@ syntax = "proto3";
 
 package bowler.robot_config;
 
-import "git_f_s.proto";
-
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.robot_config";
 
