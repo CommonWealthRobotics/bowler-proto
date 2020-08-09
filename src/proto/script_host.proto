@@ -21,7 +21,7 @@ import "git_f_s.proto";
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.script_host";
 
-// Next: 6
+// Next: 7
 // The client message type
 message SessionClientMessage {
     // The content of the message
@@ -37,6 +37,9 @@ message SessionClientMessage {
 
         // Response to a 2FA request
         TwoFactorResponse two_factor_response = 4;
+
+        // An update to the set of local changes to the repository
+        NewChanges new_changes = 6;
 
         // Error in execution of a request
         RequestError error = 5;
@@ -120,6 +123,13 @@ message TwoFactorResponse {
 
     // The 2FA code
     string two_factor = 2;
+}
+
+// Next: 2
+// Client message to update the local changes to the repository
+message NewChanges {
+    // A Git patch file containing the update
+    bytes patch = 1;
 }
 
 // Next: 8
