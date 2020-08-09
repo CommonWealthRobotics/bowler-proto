@@ -28,8 +28,15 @@ message ProjectSpec {
     // The Git commit-ish identifying the revision of the repository
     string revision = 2;
 
-    // A Git patch file containing local changes
-    bytes patch = 3;
+    // A Git patch containing local changes
+    Patch patch = 3;
+}
+
+// Next: 2
+// A model of a Git patch
+message Patch {
+    // The contents of a Git patch file
+    bytes patch = 1;
 }
 
 // Next: 3

@@ -128,8 +128,8 @@ message TwoFactorResponse {
 // Next: 2
 // Client message to update the local changes to the repository
 message NewChanges {
-    // A Git patch file containing the update
-    bytes patch = 1;
+    // A Git patch containing the update
+    bowler.git_f_s.Patch patch = 1;
 }
 
 // Next: 9
