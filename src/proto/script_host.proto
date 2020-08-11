@@ -17,11 +17,12 @@ syntax = "proto3";
 package bowler.script_host;
 
 import "git_f_s.proto";
+import "robot_config.proto";
 
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.script_host";
 
-// Next: 6
+// Next: 7
 // The client message type
 message SessionClientMessage {
     // The content of the message
@@ -37,6 +38,9 @@ message SessionClientMessage {
 
         // Response to a 2FA request
         TwoFactorResponse two_factor_response = 4;
+
+        // An update to the robot configuration
+        NewConfig new_config = 6;
 
         // Error in execution of a request
         RequestError error = 5;
@@ -122,7 +126,7 @@ message TwoFactorResponse {
     string two_factor = 2;
 }
 
-// Next: 8
+// Next: 10
 // The server message type
 message SessionServerMessage {
     oneof message {
@@ -143,6 +147,12 @@ message SessionServerMessage {
 
         // Request for 2FA code
         TwoFactorRequest two_factor_request = 6;
+
+        // Output files dump
+        ScriptOutput script_output = 8;
+
+        // An update to the robot configuration
+        NewConfig new_config = 9;
 
         // Error in execution of a request
         RequestError error = 7;
@@ -210,6 +220,20 @@ message TwoFactorRequest {
 
     // User-readable request description
     string description = 2;
+}
+
+// Next: 2
+// Server message containing script output files
+message ScriptOutput {
+    // Tarball containing the output files
+    bytes tarball = 1;
+}
+
+// Next: 2
+// Client message to update the robot configuration
+message NewConfig {
+    // The new robot configuration object
+    bowler.robot_config.RobotConfig config = 1;
 }
 
 // Next: 3
