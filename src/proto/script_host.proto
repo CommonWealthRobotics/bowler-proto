@@ -22,13 +22,16 @@ import "robot_config.proto";
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.script_host";
 
-// Next: 7
+// Next: 8
 // The client message type
 message SessionClientMessage {
     // The content of the message
     oneof message {
         // Request to run a script
         RunRequest run_request = 1;
+
+        // Request to cancel a task
+        CancelRequest cancel_request = 7;
 
         // Response to a confirmation request
         ConfirmationResponse confirmation_response = 2;
@@ -61,6 +64,16 @@ message RunRequest {
 
     // Script environment variables
     map<string, string> environment = 4;
+}
+
+// Next: 3
+// Client message to cancel a task
+message CancelRequest {
+    // The ID of the request
+    int64 request_id = 1;
+
+    // The ID of the task
+    int64 task_id = 2;
 }
 
 // Next: 3
