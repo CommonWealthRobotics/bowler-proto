@@ -237,9 +237,6 @@ message CredentialsRequest {
     // The unique ID of the request
     int64 request_id = 1;
 
-    // The unique ID of the task for which the credentials are being requested
-    int64 task_id = 2;
-
     // The remote for which credentials are being requested
     string remote = 3;
 }
