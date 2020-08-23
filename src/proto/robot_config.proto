@@ -19,6 +19,22 @@ package bowler.robot_config;
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.robot_config";
 
-// Next: 1
+// Next: 2
 // Robot configuration file object
-message RobotConfig {}
+message RobotConfig {
+    repeated Limb limbs = 1;
+    bytes globalToFeducialTransform = 2;
+}
+
+// Next 1
+// A limb of the robot
+message Limb{
+    repeated Link links =1;
+}
+
+// Next 2
+// A link of a robot
+message Link{
+    string name = 1;
+    RobotConfig subbase = 2;
+}
