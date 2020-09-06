@@ -18,23 +18,109 @@ package bowler.robot_config;
 
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.robot_config";
+//next 2
+// a center of mass object
+message CenterOfMass{
+  Pose centroid = 1;
+  double masskg = 2;
+}
 
-// Next: 2
+// next 3
+// a file location of a provider of some depency to be injected
+message GitFile {
+  string url = 1;
+  string branch = 2;
+  string file = 3;
+}
+// next 9
+message LimbType{
+  bool isArm = 1;
+  bool isLeg = 2;
+  bool isSteerableWheel = 3;
+  bool isHead = 4;
+  bool isTail = 5;
+  bool isWing = 6;
+  bool isThruster = 7;
+  bool isFin = 8;
+  bool isSpine = 9;
+}
+//next 3
+message Vitamin{
+  string type = 1;
+  string size = 2;
+  CenterOfMass com = 3;
+}
+
+// next 7
+// A pose in 6dof cartesian space
+message Pose {
+  double x_mm = 1;
+  double y_mm = 2;
+  double z_mm = 3;
+  double qw = 4;
+  double qx = 5;
+  double qy = 6;
+  double qz = 7;
+}
+// next 7
+message ParallelGroupData{
+  string parallelGroupName = 4;
+  Pose parallelGroupTipOffset = 5;
+  string relativeToLimbName = 6;
+  uint32 relativeToIndex = 7;
+}
+
+// Next: 8
 // Robot configuration file object
 message RobotConfig {
-    repeated Limb limbs = 1;
-    bytes globalToFeducialTransform = 2;
+  repeated Limb appendage = 1;
+  Pose robotZeroToFiducialTransform = 2;
+  string name = 3;
+  repeated GitFile cad = 4;
+  GitFile bodyController = 5;
+  CenterOfMass comOfCad = 6;
+  Pose imuToFiducial = 7;
+  repeated Vitamin bodyVitamin = 8;
 }
 
-// Next 1
+// Next 7
 // A limb of the robot
 message Limb{
-    repeated Link links =1;
+  repeated Link link = 1;
+  string name = 2;
+  Pose fiducialToLimbTransform = 3;
+  ParallelGroupData parallel = 4;
+  repeated Vitamin perLimbBaseVitamin = 5;
+  GitFile ik = 6;
+  LimbType type = 7;
 }
 
-// Next 2
+// Next 25
 // A link of a robot
 message Link{
-    string name = 1;
-    RobotConfig subbase = 2;
+  string name = 1;
+  RobotConfig subbase = 2;
+  uint32 linkInKinematicChainIndex = 3;
+  string deviceName = 4;
+  GitFile deviceProvider = 5;
+  uint32 deviceLinkIndex = 6;
+  double deviceUnitsToEngineeringUnitsScale = 7;
+  double upperLimitInEngineeringUnits = 8;
+  double lowerLimitInEngineeringUnits = 9;
+  double deviceMaximumValue = 10;
+  double deviceMinimumValue = 11;
+  double upperVelocityInEngineeringUnits = 12;
+  double lowerVelocityInEngineeringUnits = 13;
+  double staticOffsetOfDeviceZeroToEngineeringUnitsZeroInDeviceUnits = 14;
+  repeated Vitamin linkVitamin = 15;
+  bool isPassive = 16;
+  CenterOfMass comOfCad = 17;
+  Pose imuToLinkTip = 18;
+  double DH_delta_mm = 19;
+  double DH_A_mm = 20;
+  double DH_Theta_degrees = 21;
+  double DH_Alpha_degrees = 22;
+  bool isPrismatic = 23;
+  bool isAlwaysVirtual = 24;
+  repeated GitFile cad = 25;
 }
