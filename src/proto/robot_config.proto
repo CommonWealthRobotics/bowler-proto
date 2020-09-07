@@ -22,7 +22,7 @@ option java_package = "com.commonwealthrobotics.proto.robot_config";
 // a center of mass object
 message CenterOfMass{
   Pose centroid = 1;
-  double masskg = 2;
+  double mass_kg = 2;
 }
 
 // next 3
@@ -32,7 +32,7 @@ message GitFile {
   string branch = 2;
   string file = 3;
 }
-// next 9
+// next 10
 message LimbType{
   bool isArm = 1;
   bool isLeg = 2;
@@ -43,6 +43,7 @@ message LimbType{
   bool isThruster = 7;
   bool isFin = 8;
   bool isSpine = 9;
+  bool isFixedWheel=10;
 }
 //next 3
 message Vitamin{
