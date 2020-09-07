@@ -96,7 +96,7 @@ message Limb{
   LimbType type = 7;
 }
 
-// Next 25
+// Next 26
 // A link of a robot
 message Link{
   string name = 1;
@@ -123,5 +123,6 @@ message Link{
   double DH_Alpha_degrees = 22;
   bool isPrismatic = 23;
   bool isAlwaysVirtual = 24;
-  repeated GitFile cad = 25;
+  bool isToolLink = 25;
+  repeated GitFile cad = 26;
 }
