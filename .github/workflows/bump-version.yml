@@ -24,7 +24,7 @@ jobs:
         RELEASE_BRANCHES: master
     
     - name: Create release
-      uses: actions/create-release@V1
+      uses: actions/create-release@v1.1.3
       with:
         tag_name: ${{ steps.bump_version.outputs.new_tag }}
         release_name: ${{ steps.bump_version.outputs.new_tag }}
