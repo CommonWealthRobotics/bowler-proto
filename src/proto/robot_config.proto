@@ -16,6 +16,8 @@ syntax = "proto3";
 
 package bowler.robot_config;
 
+import "git_f_s.proto";
+
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.robot_config";
 //next 2
@@ -25,13 +27,7 @@ message CenterOfMass{
   double mass_kg = 2;
 }
 
-// next 3
-// a file location of a provider of some depency to be injected
-message GitFile {
-  string url = 1;
-  string branch = 2;
-  string file = 3;
-}
+
 // next 10
 message LimbType{
   bool isArm = 1;
@@ -77,8 +73,8 @@ message RobotConfig {
   repeated Limb appendage = 1;
   Pose robotZeroToFiducialTransform = 2;
   string name = 3;
-  repeated GitFile cad = 4;
-  GitFile bodyController = 5;
+  repeated bowler.git_f_s.FileSpec cad = 4;
+  bowler.git_f_s.FileSpec bodyController = 5;
   CenterOfMass comOfCad = 6;
   Pose imuToFiducial = 7;
   repeated Vitamin bodyVitamin = 8;
@@ -92,7 +88,7 @@ message Limb{
   Pose fiducialToLimbTransform = 3;
   ParallelGroupData parallel = 4;
   repeated Vitamin perLimbBaseVitamin = 5;
-  GitFile ik = 6;
+  bowler.git_f_s.FileSpec ik = 6;
   LimbType type = 7;
 }
 
@@ -103,7 +99,7 @@ message Link{
   RobotConfig subbase = 2;
   uint32 linkInKinematicChainIndex = 3;
   string deviceName = 4;
-  GitFile deviceProvider = 5;
+  bowler.git_f_s.FileSpec deviceProvider = 5;
   uint32 deviceLinkIndex = 6;
   double deviceUnitsToEngineeringUnitsScale = 7;
   double upperLimitInEngineeringUnits = 8;
@@ -124,5 +120,5 @@ message Link{
   bool isPrismatic = 23;
   bool isAlwaysVirtual = 24;
   bool isToolLink = 25;
-  repeated GitFile cad = 26;
+  repeated bowler.git_f_s.FileSpec cad = 26;
 }
