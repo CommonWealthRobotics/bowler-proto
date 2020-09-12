@@ -45,7 +45,7 @@ message LimbType{
 message Vitamin{
   string type = 1;
   string size = 2;
-  CenterOfMass com = 3;
+  Pose location = 3;
 }
 
 // next 7
