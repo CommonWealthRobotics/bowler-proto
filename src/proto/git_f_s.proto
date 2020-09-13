@@ -61,4 +61,3 @@ message ClearCacheResponse {}
 service GitFS {
     rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse);
 }
-
