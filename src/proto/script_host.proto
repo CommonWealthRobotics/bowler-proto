@@ -130,7 +130,8 @@ message OAuthCredentials {
 // The server message type
 message SessionServerMessage {
     oneof message {
-        // Message to indicate a new task starting
+        // Message to indicate a new task starting. 0..* tasks can be started from any client request. Task IDs will be
+        // unique at least within the scope of the request, but may not be globally unique.
         NewTask new_task = 1;
 
         // Message to indicate an update to the status of a task
@@ -172,7 +173,8 @@ message NewTask {
 // Next: 3
 // Server message to indicate an update to the status of a task
 message TaskUpdate {
-    // The unique ID of the task
+    // The unique ID of the task. Task IDs will be unique at least within the scope of the request, but may not be
+    // globally unique.
     int64 task_id = 1;
 
     // The progress of the task
