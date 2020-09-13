@@ -30,6 +30,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Format files
           title: ${{ format('[AUTO] Format {0}', github.event.pull_request.number) }}
-          body: ${{ clang-format would suggest these formatting changes against \#{0}.', github.event.pull_request.number) }}
+          body: ${{ format('clang-format would suggest these formatting changes against \#{0}.', github.event.pull_request.number) }}
           labels: no changelog
           branch: ${{ format('code-format/{0}', github.event.pull_request.number) }}
