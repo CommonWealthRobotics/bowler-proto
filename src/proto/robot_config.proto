@@ -22,3 +22,4 @@ option java_package = "com.commonwealthrobotics.proto.robot_config";
 // Next: 1
 // Robot configuration file object
 message RobotConfig {}
+

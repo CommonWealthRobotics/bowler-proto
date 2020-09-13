@@ -128,3 +128,4 @@ service DataLogging {
     // Watches the state vector
     rpc WatchState(WatchStateRequest) returns (stream WatchStateResponse);
 }
+
