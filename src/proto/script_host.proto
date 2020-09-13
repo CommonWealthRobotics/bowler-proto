@@ -131,7 +131,8 @@ message OAuthCredentials {
 message SessionServerMessage {
     oneof message {
         // Message to indicate a new task starting. 0..* tasks can be started from any client request. Task IDs will be
-        // unique at least within the scope of the request, but may not be globally unique.
+        // unique at least within the scope of the request, but may not be globally unique. Tasks started during a
+        // request will not exist past the end of that request.
         NewTask new_task = 1;
 
         // Message to indicate an update to the status of a task
