@@ -88,16 +88,15 @@ message Limb{
   Pose fiducialToLimbTransform = 3;
   ParallelGroupData parallel = 4;
   repeated Vitamin perLimbBaseVitamin = 5;
-  bowler.git_f_s.FileSpec ik = 6;
+  bowler.git_f_s.FileSpec limbController = 6;
   LimbType type = 7;
 }
 
-// Next 26
+// Next 28
 // A link of a robot
 message Link{
   string name = 1;
   RobotConfig subbase = 2;
-  uint32 linkInKinematicChainIndex = 3;
   string deviceName = 4;
   bowler.git_f_s.FileSpec deviceProvider = 5;
   uint32 deviceLinkIndex = 6;
@@ -113,12 +112,14 @@ message Link{
   bool isPassive = 16;
   CenterOfMass comOfCad = 17;
   Pose imuToLinkTip = 18;
-  double DH_delta_mm = 19;
-  double DH_A_mm = 20;
+  double DH_A_mm = 19;
+  double DH_Delta_mm = 20;
   double DH_Theta_degrees = 21;
   double DH_Alpha_degrees = 22;
   bool isPrismatic = 23;
   bool isAlwaysVirtual = 24;
   bool isToolLink = 25;
   repeated bowler.git_f_s.FileSpec cad = 26;
+  repeated Link follower =27;
+
 }
