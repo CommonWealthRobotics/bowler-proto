@@ -2,9 +2,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,16 +20,16 @@ import "git_f_s.proto";
 
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.robot_config";
-//next 2
+
+// next 2
 // a center of mass object
-message CenterOfMass{
+message CenterOfMass {
   Pose centroid = 1;
   double mass_kg = 2;
 }
 
-
 // next 10
-message LimbType{
+message LimbType {
   bool isArm = 1;
   bool isLeg = 2;
   bool isSteerableWheel = 3;
@@ -39,10 +39,10 @@ message LimbType{
   bool isThruster = 7;
   bool isFin = 8;
   bool isSpine = 9;
-  bool isFixedWheel=10;
+  bool isFixedWheel = 10;
 }
-//next 3
-message Vitamin{
+// next 3
+message Vitamin {
   string type = 1;
   string size = 2;
   Pose location = 3;
@@ -60,7 +60,7 @@ message Pose {
   double qz = 7;
 }
 // next 7
-message ParallelGroupData{
+message ParallelGroupData {
   string parallelGroupName = 4;
   Pose parallelGroupTipOffset = 5;
   string relativeToLimbName = 6;
@@ -82,7 +82,7 @@ message RobotConfig {
 
 // Next 7
 // A limb of the robot
-message Limb{
+message Limb {
   repeated Link link = 1;
   string name = 2;
   Pose fiducialToLimbTransform = 3;
@@ -94,7 +94,7 @@ message Limb{
 
 // Next 28
 // A link of a robot
-message Link{
+message Link {
   string name = 1;
   RobotConfig subbase = 2;
   string deviceName = 4;
@@ -120,6 +120,5 @@ message Link{
   bool isAlwaysVirtual = 24;
   bool isToolLink = 25;
   repeated bowler.git_f_s.FileSpec cad = 26;
-  repeated Link follower =27;
-
+  repeated Link follower = 27;
 }
