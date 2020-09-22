@@ -48,11 +48,13 @@ message ConfigurationRequest {
   string capability = 2;
 }
 
+// Next: 2
 message ConfigurationResponse {
   // The template configuration
   string configuration = 1;
 }
 
+// Next: 4
 message ValidateConfigurationRequest {
   // The plugin with the capability
   FileSpec plugin = 1;
@@ -64,6 +66,7 @@ message ValidateConfigurationRequest {
   string configuration = 3;
 }
 
+// Next: 2
 message ValidateConfigurationResponse {
   // The modified configuration annotated with pass/fail & causes data
   string validated_configuration = 1;
