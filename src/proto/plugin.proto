@@ -55,7 +55,7 @@ message ConfigurationResponse {
 }
 
 // Next: 4
-message ValidateConfigurationRequest {
+message ConfiguredPlugin {
   // The plugin with the capability
   FileSpec plugin = 1;
 
@@ -67,8 +67,11 @@ message ValidateConfigurationRequest {
 }
 
 // Next: 2
+message ValidateConfigurationRequest { ConfiguredPlugin plugin = 1; }
+
+// Next: 2
 message ValidateConfigurationResponse {
-  // The modified configuration annotated with pass/fail & causes data
+  // The modified configuration annotated with pass/fail & causes
   string validated_configuration = 1;
 }
 
