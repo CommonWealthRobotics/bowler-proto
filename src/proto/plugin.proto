@@ -21,14 +21,24 @@ import "git_f_s.proto";
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.plugin";
 
-// Next: 3
+// Next: 5
 // A request to search the plugin registry for plugins matching the keywords.
 message SearchRequest {
-  // Any keywords to use in the search.
+  // Any keywords to use in the search. These can be exact keywords or fuzzy
+  // strings.
   repeated string keywords = 1;
 
   // The Git remote of the plugin registry.
   string registry_remote = 2;
+
+  // The maximum number of plugins to include in the response. Between zero and
+  // `limit` plugins will be included in the response.
+  int32 limit = 3;
+
+  // Changes which plugin number the limit starts at. Zero by default. For
+  // example, setting this to ten will cause plugins from `10` to `10 + limit`
+  // to be included in the response.
+  int32 offset = 4;
 }
 
 // Next: 2
@@ -78,10 +88,19 @@ message ConfiguredPlugin {
 // Next: 2
 message ValidateConfigurationRequest { ConfiguredPlugin plugin = 1; }
 
-// Next: 2
+// Next: 3
 message ValidateConfigurationResponse {
-  // The modified configuration annotated with pass/fail & causes
-  string validated_configuration = 1;
+  oneof validation_result {
+    // This is set if there was a fatal validation error (e.g., the plugin does
+    // not exist).
+    string fatal_error = 1;
+
+    // This is set if validation did not encounter a fatal error. An invalid
+    // configuration does not count as a fatal error. This holds the modified
+    // configuration annotated with pass/fail. Each configuration member is
+    // wrapped in a pass/fail object. Failures include an error message.
+    string validated_configuration = 2;
+  }
 }
 
 // Handles interactions with plugins. Plugins use the FileSpec schema for code
