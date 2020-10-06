@@ -75,7 +75,8 @@ message ValidateConfigurationResponse {
   string validated_configuration = 1;
 }
 
-// Handles interactions with plugins
+// Handles interactions with plugins. Plugins use the FileSpec schema for code
+// reuse purposes, but may never set a Patch.
 service PluginManager {
   // Searches for plugins with keywords
   rpc Search(SearchRequest) returns (SearchResponse);
