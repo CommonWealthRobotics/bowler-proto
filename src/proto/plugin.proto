@@ -33,7 +33,7 @@ message SearchRequest {
 
 // Next: 2
 // The results of a plugin search
-message SearchResponse { repeated FileSpec plugins = 1; }
+message SearchResponse { repeated git_f_s.FileSpec plugins = 1; }
 
 // Next: 2
 // The capabilities a plugin provides
@@ -42,7 +42,7 @@ message CapabilitiesResponse { repeated string capabilities = 1; }
 // Next: 3
 message ConfigurationRequest {
   // The plugin with the capability
-  FileSpec plugin = 1;
+  git_f_s.FileSpec plugin = 1;
 
   // The capability
   string capability = 2;
@@ -55,9 +55,9 @@ message ConfigurationResponse {
 }
 
 // Next: 4
-message ValidateConfigurationRequest {
+message ConfiguredPlugin {
   // The plugin with the capability
-  FileSpec plugin = 1;
+  git_f_s.FileSpec plugin = 1;
 
   // The capability
   string capability = 2;
@@ -67,8 +67,11 @@ message ValidateConfigurationRequest {
 }
 
 // Next: 2
+message ValidateConfigurationRequest { ConfiguredPlugin plugin = 1; }
+
+// Next: 2
 message ValidateConfigurationResponse {
-  // The modified configuration annotated with pass/fail & causes data
+  // The modified configuration annotated with pass/fail & causes
   string validated_configuration = 1;
 }
 
@@ -78,7 +81,7 @@ service PluginManager {
   rpc Search(SearchRequest) returns (SearchResponse);
 
   // Lists the capabilities a plugin provides
-  rpc ListCapabilities(FileSpec) returns (CapabilitiesResponse);
+  rpc ListCapabilities(git_f_s.FileSpec) returns (CapabilitiesResponse);
 
   // Gets the template configuration
   rpc GetConfiguration(ConfigurationRequest) returns (ConfigurationResponse);

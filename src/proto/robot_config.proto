@@ -17,39 +17,13 @@ syntax = "proto3";
 package bowler.robot_config;
 
 import "git_f_s.proto";
+import "plugin.proto";
 
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.robot_config";
 
-// next 2
-// a center of mass object
-message CenterOfMass {
-  Pose centroid = 1;
-  double mass_kg = 2;
-}
-
-// next 10
-message LimbType {
-  bool isArm = 1;
-  bool isLeg = 2;
-  bool isSteerableWheel = 3;
-  bool isHead = 4;
-  bool isTail = 5;
-  bool isWing = 6;
-  bool isThruster = 7;
-  bool isFin = 8;
-  bool isSpine = 9;
-  bool isFixedWheel = 10;
-}
-// next 3
-message Vitamin {
-  string type = 1;
-  string size = 2;
-  Pose location = 3;
-}
-
-// next 7
-// A pose in 6dof cartesian space
+// Next: 8
+// A 6DOF pose.
 message Pose {
   double x_mm = 1;
   double y_mm = 2;
@@ -59,66 +33,168 @@ message Pose {
   double qy = 6;
   double qz = 7;
 }
-// next 7
+
+// Next: 3
+// A center of mass.
+message CenterOfMass {
+  Pose centroid = 1;
+  double mass_kg = 2;
+}
+
+// Next: 10
+message LimbType {
+  bool is_arm = 1;
+  bool is_leg = 2;
+  bool is_head = 3;
+  bool is_tail = 4;
+  bool is_steerable_wheel = 5;
+  bool is_fixed_wheel = 6;
+  bool is_control_surface = 7;
+  bool is_thruster = 8;
+  bool is_spine = 9;
+}
+
+// Next: 3
+message Vitamin {
+  string type = 1;
+  string size = 2;
+}
+
+// Next: 4
+// A ConfiguredPlugin with a Vitamin and a Pose. Used to represent primary
+// vitamins (actuators and sensors).
+message ConfiguredPluginWithVitamin {
+  plugin.ConfiguredPlugin plugin = 1;
+  Vitamin vitamin = 2;
+  Pose pose = 3;
+}
+
+// Next: 5
 message ParallelGroupData {
-  string parallelGroupName = 4;
-  Pose parallelGroupTipOffset = 5;
-  string relativeToLimbName = 6;
-  uint32 relativeToIndex = 7;
+  string parallel_group_name = 1;
+  Pose parallel_group_tip_offset = 2;
+  string relative_to_limb_name = 3;
+  int32 relative_to_index = 4;
+}
+
+// Next: 6
+// A base is an anchor for limbs.
+message Base {
+  // A human-friendly name.
+  string name = 1;
+
+  // All the limbs attached to this base.
+  repeated Limb appendage = 2;
+
+  // Any sensors attached to this base.
+  repeated ConfiguredPluginWithVitamin sensors = 3;
+
+  // The center of mass of this base without any limbs attached.
+  CenterOfMass center_of_mass = 4;
+
+  // The CAD scripts that, in union, generate this base.
+  repeated git_f_s.FileSpec cad = 5;
 }
 
 // Next: 8
-// Robot configuration file object
-message RobotConfig {
-  repeated Limb appendage = 1;
-  Pose robotZeroToFiducialTransform = 2;
-  string name = 3;
-  repeated bowler.git_f_s.FileSpec cad = 4;
-  bowler.git_f_s.FileSpec bodyController = 5;
-  CenterOfMass comOfCad = 6;
-  Pose imuToFiducial = 7;
-  repeated Vitamin bodyVitamin = 8;
-}
-
-// Next 7
-// A limb of the robot
+// A limb of the robot.
 message Limb {
-  repeated Link link = 1;
-  string name = 2;
-  Pose fiducialToLimbTransform = 3;
+  // A human-friendly name.
+  string name = 1;
+
+  // An ordered list of links that make up this limb.
+  repeated Link links = 2;
+
+  // A frame transform from the base to which this limb is attached to the root
+  // of this limb.
+  Pose base_to_limb_root_transform = 3;
+
+  // (optional) The parallel group this limb is part of.
   ParallelGroupData parallel = 4;
-  repeated Vitamin perLimbBaseVitamin = 5;
-  bowler.git_f_s.FileSpec limbController = 6;
-  LimbType type = 7;
+
+  // The controller for this limb.
+  git_f_s.FileSpec limb_controller = 5;
+
+  // The type of this limb.
+  LimbType type = 6;
+
+  // The CAD scripts that, in union, generate this limb.
+  repeated git_f_s.FileSpec cad = 7;
 }
 
-// Next 28
-// A link of a robot
+// Next: 17
+// A link of a limb.
 message Link {
+  // A human-friendly name.
   string name = 1;
-  RobotConfig subbase = 2;
-  string deviceName = 4;
-  bowler.git_f_s.FileSpec deviceProvider = 5;
-  uint32 deviceLinkIndex = 6;
-  double deviceUnitsToEngineeringUnitsScale = 7;
-  double upperLimitInEngineeringUnits = 8;
-  double lowerLimitInEngineeringUnits = 9;
-  double deviceMaximumValue = 10;
-  double deviceMinimumValue = 11;
-  double upperVelocityInEngineeringUnits = 12;
-  double lowerVelocityInEngineeringUnits = 13;
-  double staticOffsetOfDeviceZeroToEngineeringUnitsZeroInDeviceUnits = 14;
-  repeated Vitamin linkVitamin = 15;
-  bool isPassive = 16;
-  CenterOfMass comOfCad = 17;
-  Pose imuToLinkTip = 18;
-  double DH_A_mm = 19;
-  double DH_Delta_mm = 20;
-  double DH_Theta_degrees = 21;
-  double DH_Alpha_degrees = 22;
-  bool isPrismatic = 23;
-  bool isAlwaysVirtual = 24;
-  bool isToolLink = 25;
-  repeated bowler.git_f_s.FileSpec cad = 26;
-  repeated Link follower = 27;
+
+  // (optional) A base attached to the tip of this link.
+  Base subbase = 2;
+
+  // The center of mass of this link.
+  CenterOfMass center_of_mass = 4;
+
+  // The DH parameter a value (translation along the x axis).
+  double dh_a_mm = 5;
+
+  // The DH parameter d value (translation along the z axis).
+  double dh_d_mm = 6;
+
+  // The DH parameter theta value (rotation around the z axis).
+  double dh_theta_degrees = 7;
+
+  // The DH parameter alpha value (rotation around the x axis).
+  double dh_alpha_degrees = 8;
+
+  // True if this link is prismatic (actuates along z), false if it is
+  // rotational (actuates around z).
+  bool is_prismatic = 9;
+
+  // True if this link is a tool (an end effector) instead of a regular link.
+  bool is_tool_link = 10;
+
+  // True if this link is a passive link (meaning it does not have an actuator).
+  bool is_passive = 11;
+
+  // Any follower links. A follower link receives the same setpoint as the link
+  // it follows.
+  repeated Link follower = 12;
+
+  // Uniquely specifies the device that the actuator and sensors on this link
+  // are physically connected to.
+  int32 device_id = 13;
+
+  // The one and only actuator for this link (though it could be a
+  // multi-actuator plugin). This actuator is oriented at the base of this link
+  // to obey the DH convention (specify a non-identity pose to change where it
+  // is on the link relative to that orientation). If this link does not have an
+  // actuator and is passive, set `is_passive` and don't supply an actuator
+  // here.
+  ConfiguredPluginWithVitamin actuator = 14;
+
+  // 0..* sensors attached to this link. These sensors are oriented at the base
+  // of this link to obey the DH convention (specify a non-identity pose to
+  // change where it is on the link relative to that orientation).
+  repeated ConfiguredPluginWithVitamin sensors = 15;
+
+  // The sensor in `sensors` that senses the joint value. If there is no sensor
+  // that senses the joint value, set this to `-1`.
+  int32 joint_sensor_index = 16;
+}
+
+// Next: 5
+message RobotConfig {
+  // The devices connected to the robot. Each is specified with a unique ID that
+  // is referenced later by the links.
+  map<int32, plugin.ConfiguredPlugin> devices = 1;
+
+  // The primary base from which the robot is typically controlled.
+  Base primary_base = 2;
+
+  // The frame transform from the primary base's origin to the fiducial.
+  // TODO: I think this should be fiducial -> base, not base -> fiducial
+  Pose robot_to_fiducial_transform = 3;
+
+  // The body controllers. Only one may be ran at a time.
+  repeated git_f_s.FileSpec body_controller = 4;
 }
