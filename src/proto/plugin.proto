@@ -24,22 +24,27 @@ option java_package = "com.commonwealthrobotics.proto.plugin";
 // Next: 3
 // A request to search the plugin registry for plugins matching the keywords.
 message SearchRequest {
-  // Any keywords to use in the search
+  // Any keywords to use in the search.
   repeated string keywords = 1;
 
-  // The Git remote of the plugin registry
+  // The Git remote of the plugin registry.
   string registry_remote = 2;
 }
 
 // Next: 2
-// The results of a plugin search
+// The results of a plugin search.
 message SearchResponse { repeated git_f_s.FileSpec plugins = 1; }
 
 // Next: 2
-// The capabilities a plugin provides
+// A request the list the capabilities of a plugin.
+message CapabilitiesRequest { git_f_s.FileSpec plugin = 1; }
+
+// Next: 2
+// The capabilities a plugin provides.
 message CapabilitiesResponse { repeated string capabilities = 1; }
 
 // Next: 3
+// A request to get the configuration of a plugin given a capability.
 message ConfigurationRequest {
   // The plugin with the capability
   git_f_s.FileSpec plugin = 1;
@@ -55,14 +60,18 @@ message ConfigurationResponse {
 }
 
 // Next: 4
+// A fully configured plugin that is (potentially) ready to be loaded by the
+// kernel.
 message ConfiguredPlugin {
-  // The plugin with the capability
+  // The plugin.
   git_f_s.FileSpec plugin = 1;
 
-  // The capability
+  // A selected capailibty. Must be one of the capabilities returned by
+  // ListCapabilities.
   string capability = 2;
 
-  // The modified configuration
+  // The configuration for the selected capability. Must be modified from the
+  // configuration returned by GetConfiguration.
   string configuration = 3;
 }
 
@@ -78,16 +87,16 @@ message ValidateConfigurationResponse {
 // Handles interactions with plugins. Plugins use the FileSpec schema for code
 // reuse purposes, but may never set a Patch.
 service PluginManager {
-  // Searches for plugins with keywords
+  // Searches for plugins with keywords.
   rpc Search(SearchRequest) returns (SearchResponse);
 
-  // Lists the capabilities a plugin provides
-  rpc ListCapabilities(git_f_s.FileSpec) returns (CapabilitiesResponse);
+  // Lists the capabilities a plugin provides.
+  rpc ListCapabilities(CapabilitiesRequest) returns (CapabilitiesResponse);
 
-  // Gets the template configuration
+  // Gets the template configuration.
   rpc GetConfiguration(ConfigurationRequest) returns (ConfigurationResponse);
 
-  // Validates a modified configuration
+  // Validates a modified configuration.
   rpc ValidateConfiguration(ValidateConfigurationRequest)
       returns (ValidateConfigurationResponse);
 }
