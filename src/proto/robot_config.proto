@@ -2,9 +2,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,9 +16,196 @@ syntax = "proto3";
 
 package bowler.robot_config;
 
+import "git_f_s.proto";
+import "plugin.proto";
+
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.robot_config";
 
-// Next: 1
-// Robot configuration file object
-message RobotConfig {}
+// Next: 8
+// A 6DOF pose.
+message Pose {
+  double x_mm = 1;
+  double y_mm = 2;
+  double z_mm = 3;
+  double qw = 4;
+  double qx = 5;
+  double qy = 6;
+  double qz = 7;
+}
+
+// Next: 3
+// A center of mass.
+message CenterOfMass {
+  Pose centroid = 1;
+  double mass_kg = 2;
+}
+
+// Next: 10
+message LimbType {
+  bool is_arm = 1;
+  bool is_leg = 2;
+  bool is_head = 3;
+  bool is_tail = 4;
+  bool is_steerable_wheel = 5;
+  bool is_fixed_wheel = 6;
+  bool is_control_surface = 7;
+  bool is_thruster = 8;
+  bool is_spine = 9;
+}
+
+// Next: 3
+message Vitamin {
+  string type = 1;
+  string size = 2;
+}
+
+// Next: 4
+// A ConfiguredPlugin with a Vitamin and a Pose. Used to represent primary
+// vitamins (actuators and sensors).
+message ConfiguredPluginWithVitamin {
+  plugin.ConfiguredPlugin plugin = 1;
+  Vitamin vitamin = 2;
+  Pose pose = 3;
+}
+
+// Next: 5
+// A parallel group is a group of limbs that form a parallel mechanism (or any
+// sort of kinematic loop). This message specifies the data needed on each limb
+// of the group. In the documentation for this message, references to "this
+// limb" refer to the limb that this ParallelGroupData is a member of.
+message ParallelGroupData {
+  // The unique name of this parallel group. All limbs with a ParallelGroupData
+  // with this name will be part of the same parallel group.
+  string parallel_group_name = 1;
+
+  // The name of the limb that this limb is relative to, referred to as the
+  // "relative-to limb".
+  string relative_to_limb_name = 2;
+
+  // An index of a link in the relative-to limb. This limb's tip is constrained
+  // (along with the parallel_group_tip_offset) to the tip of this link.
+  int32 relative_to_link_index = 3;
+
+  // The offset from the tip of this limb to the tip of the specified link on
+  // the relative-to limb.
+  Pose parallel_group_tip_offset = 4;
+}
+
+// Next: 6
+// A base is an anchor for limbs.
+message Base {
+  // A human-friendly name.
+  string name = 1;
+
+  // All the limbs attached to this base.
+  repeated Limb appendage = 2;
+
+  // Any sensors attached to this base.
+  repeated ConfiguredPluginWithVitamin sensors = 3;
+
+  // The center of mass of this base without any limbs attached.
+  CenterOfMass center_of_mass = 4;
+
+  // The CAD scripts that, in union, generate this base.
+  repeated git_f_s.FileSpec cad = 5;
+}
+
+// Next: 8
+// A limb of the robot.
+message Limb {
+  // A human-friendly name.
+  string name = 1;
+
+  // An ordered list of links that make up this limb.
+  repeated Link links = 2;
+
+  // A frame transform from the base to which this limb is attached to the root
+  // of this limb.
+  Pose base_to_limb_root_transform = 3;
+
+  // (optional) The parallel group this limb is part of.
+  ParallelGroupData parallel = 4;
+
+  // The controller for this limb.
+  git_f_s.FileSpec limb_controller = 5;
+
+  // The type of this limb.
+  LimbType type = 6;
+
+  // The CAD scripts that, in union, generate this limb.
+  repeated git_f_s.FileSpec cad = 7;
+}
+
+// Next: 17
+// A link of a limb.
+message Link {
+  // A human-friendly name.
+  string name = 1;
+
+  // (optional) A base attached to the tip of this link.
+  Base subbase = 2;
+
+  // The center of mass of this link.
+  CenterOfMass center_of_mass = 4;
+
+  // The DH parameter a value (translation along the x axis).
+  double dh_a_mm = 5;
+
+  // The DH parameter d value (translation along the z axis).
+  double dh_d_mm = 6;
+
+  // The DH parameter theta value (rotation around the z axis).
+  double dh_theta_degrees = 7;
+
+  // The DH parameter alpha value (rotation around the x axis).
+  double dh_alpha_degrees = 8;
+
+  // True if this link is prismatic (actuates along z), false if it is
+  // rotational (actuates around z).
+  bool is_prismatic = 9;
+
+  // True if this link is a tool (an end effector) instead of a regular link.
+  bool is_tool_link = 10;
+
+  // True if this link is a passive link (meaning it does not have an actuator).
+  bool is_passive = 11;
+
+  // Any follower links. A follower link receives the same setpoint as the link
+  // it follows.
+  repeated Link follower = 12;
+
+  // Uniquely specifies the device that the actuator and sensors on this link
+  // are physically connected to.
+  int32 device_id = 13;
+
+  // The one and only actuator for this link (though it could be a
+  // multi-actuator plugin). This actuator is oriented at the base of this link
+  // to obey the DH convention (specify a non-identity pose to change where it
+  // is on the link relative to that orientation). If this link does not have an
+  // actuator and is passive, set `is_passive` and don't supply an actuator
+  // here.
+  ConfiguredPluginWithVitamin actuator = 14;
+
+  // 0..* sensors attached to this link. These sensors are oriented at the base
+  // of this link to obey the DH convention (specify a non-identity pose to
+  // change where it is on the link relative to that orientation).
+  repeated ConfiguredPluginWithVitamin sensors = 15;
+
+  // The sensor in `sensors` that senses the joint value. If there is no sensor
+  // that senses the joint value, set this to `-1`.
+  int32 joint_sensor_index = 16;
+}
+
+// Next: 4
+message RobotConfig {
+  // The devices connected to the robot. Each is specified with a unique ID that
+  // is referenced later by the links.
+  map<int32, plugin.ConfiguredPlugin> devices = 1;
+
+  // The primary base from which the robot is typically controlled.
+  Base primary_base = 2;
+
+  // The body controllers. Only one may be ran at a time.
+  repeated git_f_s.FileSpec body_controller = 3;
+}
