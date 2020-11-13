@@ -67,3 +67,4 @@ service Launcher {
   // Updates the kernel
   rpc UpdateKernel(UpdateKernelRequest) returns (UpdateKernelResponse);
 }
+
