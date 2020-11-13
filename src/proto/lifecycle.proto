@@ -43,4 +43,3 @@ service Lifecycle {
   // Queries the kernel's JDWB port
   rpc DebugPort(DebugPortRequest) returns (DebugPortResponse);
 }
-
