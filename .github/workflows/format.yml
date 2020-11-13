@@ -1,0 +1,35 @@
+name: Code Formatting
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # check out HEAD on the branch
+          ref: ${{ github.head_ref }}
+          # make sure the parent commit is grabbed as well, because
+          # that's what will get formatted (i.e. the most recent commit)
+          fetch-depth: 2
+
+      - uses: purduesigbots/clang-format-action@main
+        # use one of clang-format's supported styles or leave this out to use the style in your .clang-format file
+        with:
+          style: file
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Format files
+          title: ${{ format('[AUTO] Format {0}', github.event.pull_request.number) }}
+          body: ${{ format('clang-format would suggest these formatting changes against \#{0}.', github.event.pull_request.number) }}
+          labels: no changelog
+          branch: ${{ format('code-format/{0}', github.event.pull_request.number) }}
