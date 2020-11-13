@@ -257,4 +257,3 @@ service ScriptHost {
     // Initiate a script session with the kernel
     rpc Session(stream SessionClientMessage) returns (stream SessionServerMessage);
 }
-
