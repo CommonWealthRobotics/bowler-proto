@@ -1,0 +1,121 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package bowler.plugin;
+
+import "git_f_s.proto";
+
+option java_multiple_files = true;
+option java_package = "com.commonwealthrobotics.proto.plugin";
+
+// Next: 5
+// A request to search the plugin registry for plugins matching the keywords.
+message SearchRequest {
+  // Any keywords to use in the search. These can be exact keywords or fuzzy
+  // strings.
+  repeated string keywords = 1;
+
+  // The Git remote of the plugin registry.
+  string registry_remote = 2;
+
+  // The maximum number of plugins to include in the response. Between zero and
+  // `limit` plugins will be included in the response.
+  int32 limit = 3;
+
+  // Changes which plugin number the limit starts at. Zero by default. For
+  // example, setting this to ten will cause plugins from `10` to `10 + limit`
+  // to be included in the response.
+  int32 offset = 4;
+}
+
+// Next: 2
+// The results of a plugin search.
+message SearchResponse { repeated git_f_s.FileSpec plugins = 1; }
+
+// Next: 2
+// A request the list the capabilities of a plugin.
+message CapabilitiesRequest { git_f_s.FileSpec plugin = 1; }
+
+// Next: 2
+// The capabilities a plugin provides.
+message CapabilitiesResponse { repeated string capabilities = 1; }
+
+// Next: 3
+// A request to get the configuration of a plugin given a capability.
+message ConfigurationRequest {
+  // The plugin with the capability
+  git_f_s.FileSpec plugin = 1;
+
+  // The capability
+  string capability = 2;
+}
+
+// Next: 2
+message ConfigurationResponse {
+  // The template configuration
+  string configuration = 1;
+}
+
+// Next: 4
+// A fully configured plugin that is (potentially) ready to be loaded by the
+// kernel.
+message ConfiguredPlugin {
+  // The plugin.
+  git_f_s.FileSpec plugin = 1;
+
+  // A selected capailibty. Must be one of the capabilities returned by
+  // ListCapabilities.
+  string capability = 2;
+
+  // The configuration for the selected capability. Must be modified from the
+  // configuration returned by GetConfiguration.
+  string configuration = 3;
+}
+
+// Next: 2
+message ValidateConfigurationRequest { ConfiguredPlugin plugin = 1; }
+
+// Next: 3
+message ValidateConfigurationResponse {
+  oneof validation_result {
+    // This is set if there was a fatal validation error (e.g., the plugin does
+    // not exist).
+    string fatal_error = 1;
+
+    // This is set if validation did not encounter a fatal error. An invalid
+    // configuration does not count as a fatal error. This holds the modified
+    // configuration annotated with pass/fail. Each configuration member is
+    // wrapped in a pass/fail object. Failures include an error message.
+    string validated_configuration = 2;
+  }
+}
+
+// Handles interactions with plugins. Plugins use the FileSpec schema for code
+// reuse purposes, but may never set a Patch.
+service PluginManager {
+  // Searches for plugins with keywords.
+  rpc Search(SearchRequest) returns (SearchResponse);
+
+  // Lists the capabilities a plugin provides.
+  rpc ListCapabilities(CapabilitiesRequest) returns (CapabilitiesResponse);
+
+  // Gets the template configuration.
+  rpc GetConfiguration(ConfigurationRequest) returns (ConfigurationResponse);
+
+  // Validates a modified configuration.
+  rpc ValidateConfiguration(ValidateConfigurationRequest)
+      returns (ValidateConfigurationResponse);
+}
