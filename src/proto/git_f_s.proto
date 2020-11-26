@@ -20,15 +20,21 @@ option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.gitfs";
 
 // Next: 4
-// The host-agnostic identifier for a project
+// The host-agnostic identifier for a project. This models both projects that
+// are published to a Git remote and those that are not.
 message ProjectSpec {
-  // The Git remote path containing the project
+  // The Git remote path containing the project. If the project is not
+  // published to a remote, leave this empty.
   string repo_remote = 1;
 
-  // The Git commit-ish identifying the revision of the repository
+  // The Git commit-ish identifying the revision of the repository. If the
+  // project is not published to a remote, leave this empty.
   string revision = 2;
 
-  // A Git patch containing local changes
+  // A Git patch containing local changes against the remote's version of the
+  // project at the specified revision. If the project is not under source
+  // control, this will be the full content of the project (this patch will be
+  // applied against an empty repository).
   Patch patch = 3;
 }
 
