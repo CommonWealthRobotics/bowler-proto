@@ -276,5 +276,6 @@ message RequestError {
 // The script host service
 service ScriptHost {
   // Initiate a script session with the kernel
-  rpc Session(stream SessionClientMessage) returns(stream SessionServerMessage);
+  rpc Session(stream SessionClientMessage)
+      returns (stream SessionServerMessage);
 }
