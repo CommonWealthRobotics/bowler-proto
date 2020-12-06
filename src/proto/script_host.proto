@@ -161,13 +161,13 @@ message SessionServerMessage {
     // Request for user credentials
     CredentialsRequest credentials_request = 5;
 
-    // Result from a successful script exit. Terminates this session.
+    // Result from a successful script exit
     ScriptOutput script_output = 8;
 
     // An update to the robot configuration
     NewConfig new_config = 9;
 
-    // Error in execution of a request. Terminates this session.
+    // Error in execution of a request
     RequestError error = 7;
   }
 }
