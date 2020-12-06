@@ -161,13 +161,13 @@ message SessionServerMessage {
     // Request for user credentials
     CredentialsRequest credentials_request = 5;
 
-    // Output files dump
+    // Result from a successful script exit. Terminates this session.
     ScriptOutput script_output = 8;
 
     // An update to the robot configuration
     NewConfig new_config = 9;
 
-    // Error in execution of a request
+    // Error in execution of a request. Terminates this session.
     RequestError error = 7;
   }
 }
@@ -245,12 +245,18 @@ message CredentialsRequest {
   string remote = 3;
 }
 
-// Next: 2
+// Next: 4
 // The complete state of the script's output directory when it is finished
 // running.
 message ScriptOutput {
+  // The unique ID of the request
+  int64 request_id = 1;
+
+  // Stringified output from the script. This is some descriptive string showing the script output. Any richer output data should be put into files the script's output directory.
+  string output = 2;
+
   // Tarball containing the output files
-  bytes tarball = 1;
+  bytes tarball = 3;
 }
 
 // Next: 2
