@@ -252,7 +252,8 @@ message ScriptOutput {
   // The unique ID of the request
   int64 request_id = 1;
 
-  // Stringified output from the script. This is some descriptive string showing the script output. Any richer output data should be put into files the script's output directory.
+  // Stringified output from the script. This is some descriptive string showing the script output.
+  // Any richer output data should be put into files the script's output directory.
   string output = 2;
 
   // Tarball containing the output files
