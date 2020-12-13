@@ -1,0 +1,23 @@
+name: PRConsumers
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  PRConsumers:
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: echo "${{ GITHUB_REF }}"
+      - run: echo "${{ GITHUB_SHA }}"
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.BOWLERBOT_PAT }}
+          script: |
+            octokit.repos.createDispatchEvent({
+              "CommonWealthRobotics",
+              "bowler-proto-kotlin",
+              "bowler-proto-release",
+              '{"release":"${{ GITHUB_REF }}"}'
+            });
