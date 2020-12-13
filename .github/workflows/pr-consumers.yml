@@ -17,5 +17,5 @@ jobs:
               owner: "CommonWealthRobotics",
               repo: "bowler-proto-kotlin",
               event_type: "bowler-proto-release",
-              client_payload: '{"release":"${ process.env.GITHUB_SHA }"}'
+              client_payload: { release: process.env.GITHUB_SHA }
             });
