@@ -19,5 +19,5 @@ jobs:
               "CommonWealthRobotics",
               "bowler-proto-kotlin",
               "bowler-proto-release",
-              '{"release":"${{ process.env.GITHUB_REF }}"}'
+              '{"release":"${ process.env.GITHUB_REF }"}'
             });
