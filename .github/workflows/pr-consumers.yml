@@ -13,7 +13,7 @@ jobs:
         with:
           github-token: ${{ secrets.BOWLERBOT_PAT }}
           script: |
-            octokit.repos.createDispatchEvent({
+            github.repos.createDispatchEvent({
               owner: "CommonWealthRobotics",
               repo: "bowler-proto-kotlin",
               event_type: "bowler-proto-release",
