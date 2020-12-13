@@ -23,6 +23,5 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
-          body: ${{ steps.generate-changelog.outputs.changelog }}
           draft: false
           prerelease: ${{ startsWith(github.ref, 'refs/tags/0') }}
