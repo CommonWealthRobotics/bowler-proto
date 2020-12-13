@@ -1,0 +1,29 @@
+name: CheckNewVersion
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  CheckNewVersion:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          ssh-key: ${{ secrets.BOWLERBOT_SSH_KEY }}
+
+      - name: Parse this tag
+        id: parse-tag
+        run: |
+          THIS_TAG=$(grep 'projectVersion' 'version.properties' | awk '{ split($0,a,"="); print a[2] }')
+          echo "::set-output name=tag::$(echo $THIS_TAG)"
+
+      - name: Require a new version
+        run: |
+          ! git rev-parse $THIS_TAG >/dev/null 2>&1
+        env:
+          THIS_TAG: ${{ steps.parse-tag.outputs.tag }}
