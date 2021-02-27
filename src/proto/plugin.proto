@@ -21,8 +21,9 @@ import "git_f_s.proto";
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.plugin";
 
-// Next: 5
 // A request to search the plugin registry for plugins matching the keywords.
+//
+// Next: 5
 message SearchRequest {
   // Any keywords to use in the search. These can be exact keywords or fuzzy
   // strings.
@@ -41,20 +42,30 @@ message SearchRequest {
   int32 offset = 4;
 }
 
-// Next: 2
 // The results of a plugin search.
-message SearchResponse { repeated git_f_s.FileSpec plugins = 1; }
-
+//
 // Next: 2
+message SearchResponse {
+  repeated git_f_s.FileSpec plugins = 1;
+}
+
 // A request the list the capabilities of a plugin.
-message CapabilitiesRequest { git_f_s.FileSpec plugin = 1; }
-
+//
 // Next: 2
-// The capabilities a plugin provides.
-message CapabilitiesResponse { repeated string capabilities = 1; }
+message CapabilitiesRequest {
+  git_f_s.FileSpec plugin = 1;
+}
 
-// Next: 3
+// The capabilities a plugin provides.
+//
+// Next: 2
+message CapabilitiesResponse {
+  repeated string capabilities = 1;
+}
+
 // A request to get the configuration of a plugin given a capability.
+//
+// Next: 3
 message ConfigurationRequest {
   // The plugin with the capability
   git_f_s.FileSpec plugin = 1;
@@ -86,7 +97,9 @@ message ConfiguredPlugin {
 }
 
 // Next: 2
-message ValidateConfigurationRequest { ConfiguredPlugin plugin = 1; }
+message ValidateConfigurationRequest {
+  ConfiguredPlugin plugin = 1;
+}
 
 // Next: 3
 message ValidateConfigurationResponse {
@@ -116,6 +129,5 @@ service PluginManager {
   rpc GetConfiguration(ConfigurationRequest) returns (ConfigurationResponse);
 
   // Validates a modified configuration.
-  rpc ValidateConfiguration(ValidateConfigurationRequest)
-      returns (ValidateConfigurationResponse);
+  rpc ValidateConfiguration(ValidateConfigurationRequest) returns (ValidateConfigurationResponse);
 }

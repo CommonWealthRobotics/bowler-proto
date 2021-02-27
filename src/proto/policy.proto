@@ -1,0 +1,172 @@
+
+syntax = "proto3";
+
+package bowler.policy;
+
+option java_multiple_files = true;
+option java_package = "com.commonwealthrobotics.proto.policy";
+
+// A document that describes the policies given to the kernel. Policies are defined by the
+// PolicyContainer. See each component policy type for more information on what they do.
+//
+// Policy documents are NOT persisted between kernel restarts. Policy documents should be stored
+// entirely in memory.
+//
+// Action and resource specifiers are colon-separated strings. Each component of the string (between
+// colons) must follow this format:
+//
+// - The component may contain simple alphanumerics (a-z, A-Z, 0-9), hyphens (-), and underscores
+// (_).
+// - The component may not contain colons (:).
+// - The component may contain zero or one wildcard characters (*). The component must end
+// immedately following the wildcard character. The part of the component before the wildcard
+// character will be used as a prefix match.
+//
+// Example specifiers:
+//
+// - `github:repo:MyOrg/MyRepo`
+// - `github:repo:MyOrg/RepoPrefix*`
+// - `github:repo:MyOrg/*`
+// - `github:repo:*`
+// - `*:*:*`
+//
+// The kernel will operate within the boundaries set by this policy document. If a permission is
+// not granted to the kernel by this document, it is denied. If a given action-resource pair is
+// defined in multiple policies and one of the policies is a deny, that action-resource pair is
+// always denied.
+//
+// Next: 3
+message PolicyDocument {
+  // A version number indicating the bowler-proto version this policy was written in. This may
+  // determine how the policy is parsed. Check the bowler-proto releases for information on how
+  // versions may differ. This must be a valid semver version according to Semantic Versioning 2.0
+  // [here](https://semver.org/).
+  string version = 1;
+
+  // The statements that this policy is comprised of.
+  repeated PolicyContainer statements = 2;
+}
+
+// A simple container for the different policy types.
+//
+// Next: 3
+message PolicyContainer {
+  oneof policy {
+    ActionPolicy action_policy = 1;
+    CredentialPolicy credential_policy = 2;
+  }
+}
+
+// Specifies what actions the kernel is allowed to perform and the resources on which those actions
+// may be performed. For example, this policy may specify that the kernel is allowed to flash
+// microcontrollers with a certain vendor ID.
+//
+// Next: 4
+message ActionPolicy {
+  // Whether this policy is an allow (the kernel may perform the actions on the resources) or a deny
+  // (the kernel may not perform the actions on the resources).
+  bool allow = 1;
+
+  // The actions this policy applies to. The action schema is: `<type>:<resource>`. For example,
+  // `flash:uc` is the action for flashing a microcontroller.
+  //
+  // Possible actions are:
+  //
+  // - `flash`: Upload a program to a device (overwriting any program that is already present).
+  //   - `uc`: A microcontroller.
+  repeated string actions = 2;
+
+  // The resources the actions may act on. All the resources specified here must have the same type
+  // as those specified in the actions. There must be exactly one resource specified here for every
+  // resource mentioned in the actions. The resource schema is: `<type>:<scope>:<name>`. For
+  // example, `uc:file:/dev/sda` specifies the microcontroller mounted as the `/dev/sda` file.
+  //
+  // Possible resources are:
+  //
+  // - `uc`: A microcontroller.
+  //   - `name`: The device name. This is the name specified by the device over the Bowler RPC.
+  //     - Schema: `uc:name:<uc name>`
+  //     - E.g. `uc:name:my-uc-name`
+  //   - `file`: An absolute file path in the kernel's local file system.
+  //     - Schema: `uc:file:<file path>`
+  //     - E.g. `uc:file:/dev/sda`
+  //     - E.g. `uc:file:/dev/tty*`
+  //   - `ipv4`: IPv4 address specified as four decimal octets. IP ranges are not accepted. CIDR
+  //   notation is not accepted.
+  //     - Schema: `uc:ipv4:<octet>.<octet>.<octet>.<octet>`
+  //     - E.g. `uc:ipv4:192.168.1.2`
+  //     - E.g. `uc:ipv4:192.168.*`
+  //   - `hid`: Vendor ID and product ID.
+  //     - Schema: `uc:hid:<vid>/<pid>`
+  //     - E.g. `uc:hid:ab12/cd34`
+  repeated string resources = 3;
+}
+
+// Specifies what scopes the kernel is allowed to authenticate to and what credentials it must use
+// to authenticate to them. For example, this policy may specify that the kernel is allowed to clone
+// a GitHub repository in a specific GitHub organization using a specific API key.
+//
+// When authenticating to a scope, the kernel will always try to use anonymous access. Failing that,
+// it will use the credentials specified in the relevant policy. The kernel will not attempt to
+// authenticate to a scope for which it is denied to authenticate.
+//
+// By default, all scopes are blocked, including for anonymous access. This may be subverted by
+// supplying a blanket policy with anonymous access to all scopes (`*:*`).
+//
+// Next: 3
+message CredentialPolicy {
+  // The credentials the kernel may use to authenticate to the scopes.
+  //
+  // Possible credentials are:
+  //
+  // - API key: A key string.
+  //   - Schema: `api_key:<API KEY>`
+  //   - E.g.: `api_key:f7s5nzp98g9dh1312khj35bv9v82n2200vb7fds2`
+  // - Anonymous: No authentication is required.
+  //   - Schema: `anonymous`
+  //   - E.g.: `anonymous`
+  string credentials = 1;
+
+  // The scopes the kernel is allowed to authenticate to.
+  //
+  // Possible scopes are:
+  //
+  // - `github`: A GitHub-hosted repository or Gist.
+  //   - `repo`: A GitHub-hosted repository.
+  //     - Schema: `github:repo:<organization>/<repository>`
+  //     - E.g. `github:repo:MyOrg/MyRepo`
+  //     - E.g. `github:repo:MyOrg/*`
+  //   - `gist`: A GitHub-hosted Gist.
+  //     - Schema: `github:gist:<gist ID>`
+  //     - E.g. `github:gist:df8s8778hg9n2345mn0nx9zc7z9b5c5b7fs809q0`
+  repeated string scopes = 2;
+}
+
+// The response type to the SetPolicyDocument rpc.
+//
+// Next: 3
+message SetPolicyDocumentResponse {
+  // Whether the policy document was accepted.
+  bool accepted = 1;
+
+  // If the policy document was rejected, this will contain a human-readable reason explaining why
+  // it was rejected.
+  string rejection_reason = 2;
+}
+
+// A request to get the current policy document.
+//
+// Next: 1
+message GetPolicyDocumentRequest {}
+
+// This service maintains the effective PolicyDocument. If the kernel needs to perform an action
+// that requires permissions configurable via a PolicyDocument and no such document has been set,
+// that action will be allowed or denied as if an empty PolicyDocument was set.
+service PolicyService {
+  // Sets a new policy document. If it is accepted, the new document will immediately be placed into
+  // effect.
+  rpc SetPolicyDocument(PolicyDocument) returns (SetPolicyDocumentResponse);
+
+  // Gets the current policy document.
+  rpc GetPolicyDocument(GetPolicyDocumentRequest) returns (PolicyDocument);
+}

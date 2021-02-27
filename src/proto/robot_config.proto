@@ -22,8 +22,9 @@ import "plugin.proto";
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.robot_config";
 
-// Next: 8
 // A 6DOF pose.
+//
+// Next: 8
 message Pose {
   double x_mm = 1;
   double y_mm = 2;
@@ -34,46 +35,91 @@ message Pose {
   double qz = 7;
 }
 
-// Next: 3
 // A center of mass.
+//
+// Next: 3
 message CenterOfMass {
   Pose centroid = 1;
   double mass_kg = 2;
 }
 
+// All of the possible configurations of a limb.
+//
 // Next: 10
 message LimbType {
+  // An arm is a limb that is used for manipulation (and not locomotion).
   bool is_arm = 1;
+
+  // A leg is a limb that is used for locomotion.
   bool is_leg = 2;
+
+  // A head is a limb that may be used to mount sensors, secondary actuators, and may be used to
+  // improve the robot's balance.
   bool is_head = 3;
+
+  // A tail is a limb that is primarily used to improve the robot's balance.
   bool is_tail = 4;
+
+  // A steerable wheel is a powered or unpowered wheel that can rotate about its yaw axis.
   bool is_steerable_wheel = 5;
+
+  // A fixed wheel is a powered or unpowered wheel that cannot rotate about its yaw axis.
   bool is_fixed_wheel = 6;
+
+  // A control surface is an aerodynamic limb that is used to adjust an aircraft's attitude.
   bool is_control_surface = 7;
+
+  // A thruster is a limb that generates a propulsive force.
   bool is_thruster = 8;
+
+  // A spine is a limb that connects two bases.
   bool is_spine = 9;
 }
 
+// A vitamin is anything that cannot be produced by additive manufacturing (e.g., actuators,
+// sensors, fasteners). There are two classes of vitamins: primary and secondary.
+//
+// Primary vitamins are actuators and sensors. These vitamins, along with the kinematic description,
+// account the majority of the functionality of the robot. These vitamins also have plugins
+// associated with them because they constitute some electromechanical interface. See
+// `ConfiguredPluginWithVitamin` for more information.
+//
+// Secondary vitamins are all other vitamins: fasteners, rubber feet, etc.
+//
+// Vitamins are stored in a database. A vitamin's `type` and `size` uniquely identifies it within
+// the database. Other information about the vitamin, such as its mass, center of mass, and price,
+// are available to the CAD generator after it has retrieved the vitamin from the database;
+// therefore, those values are not specified here. Furthermore, there are multiple vitamin
+// databases. Each database roughly represents a manufacturer's product range; any given vitamin may
+// be available from multiple manufacturers at different price points. One implication of this is
+// that determining the true BOM requires selecting not only the vitamins, but also the manufactures
+// from which those vitamins are sourced (on a per-vitamin basis).
+//
 // Next: 3
 message Vitamin {
+  // A unique identifier for the vitamin's product line (e.g. a servo model, a bolt type (e.g. M5)).
   string type = 1;
+
+  // A unique identifier for the item in the vitamin's product line (e.g. the length of an M5 bolt).
+  // Some vitamins may only have one size (e.g. a custom motor), other may have many sizes (e.g. an
+  // M5 bolt has many standard lengths).
   string size = 2;
 }
 
+// A ConfiguredPlugin with a Vitamin and a Pose. Used to represent primary vitamins.
+//
 // Next: 4
-// A ConfiguredPlugin with a Vitamin and a Pose. Used to represent primary
-// vitamins (actuators and sensors).
 message ConfiguredPluginWithVitamin {
   plugin.ConfiguredPlugin plugin = 1;
   Vitamin vitamin = 2;
-  Pose pose = 3;
 }
 
-// Next: 5
 // A parallel group is a group of limbs that form a parallel mechanism (or any
 // sort of kinematic loop). This message specifies the data needed on each limb
 // of the group. In the documentation for this message, references to "this
 // limb" refer to the limb that this ParallelGroupData is a member of.
+//
+// Next: 5
 message ParallelGroupData {
   // The unique name of this parallel group. All limbs with a ParallelGroupData
   // with this name will be part of the same parallel group.
@@ -92,8 +138,9 @@ message ParallelGroupData {
   Pose parallel_group_tip_offset = 4;
 }
 
-// Next: 6
 // A base is an anchor for limbs.
+//
+// Next: 6
 message Base {
   // A human-friendly name.
   string name = 1;
@@ -111,8 +158,9 @@ message Base {
   repeated git_f_s.FileSpec cad = 5;
 }
 
-// Next: 8
 // A limb of the robot.
+//
+// Next: 8
 message Limb {
   // A human-friendly name.
   string name = 1;
@@ -134,11 +182,14 @@ message Limb {
   LimbType type = 6;
 
   // The CAD scripts that, in union, generate this limb.
+  // TODO: Define how multiple CAD scripts are invoked and how their outputs are combined.
+  // TODO: Also define what happens if multiple CAD scripts change the robot config.
   repeated git_f_s.FileSpec cad = 7;
 }
 
-// Next: 17
 // A link of a limb.
+//
+// Next: 17
 message Link {
   // A human-friendly name.
   string name = 1;
@@ -197,6 +248,9 @@ message Link {
   int32 joint_sensor_index = 16;
 }
 
+// The full configuration describing a robot. This configuration is all that is needed to produce a
+// complete robot including (but not limited to) CAD geometry, controls, and device software.
+//
 // Next: 4
 message RobotConfig {
   // The devices connected to the robot. Each is specified with a unique ID that

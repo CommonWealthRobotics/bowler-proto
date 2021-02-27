@@ -19,51 +19,60 @@ package bowler.git_f_s;
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.gitfs";
 
+// A host-agnostic identifier for a Git repository. This models both repositories that are published
+// to a Git remote and those that are not.
+//
 // Next: 4
-// The host-agnostic identifier for a project. This models both projects that
-// are published to a Git remote and those that are not.
 message ProjectSpec {
-  // The Git remote path containing the project. If the project is not
-  // published to a remote, leave this empty.
+  // The Git remote path containing the project. If the project is not published to a remote, this
+  // must be empty.
   string repo_remote = 1;
 
-  // The Git commit-ish identifying the revision of the repository. If the
-  // project is not published to a remote, leave this empty.
+  // The Git commit hash identifying the revision of the repository. If the project is not published
+  // to a remote, this must be empty.
   string revision = 2;
 
-  // A Git patch containing local changes against the remote's version of the
-  // project at the specified revision. If the project is not under source
-  // control, this will be the full content of the project (this patch will be
-  // applied against an empty repository).
+  // A Git patch containing local changes against the *remote's* version of the project at the
+  // specified revision. If the project is not under source control, this must be the full content
+  // of the project (this patch will be applied against an empty repository).
   Patch patch = 3;
 }
 
+// A model of a Git patch.
+//
 // Next: 2
-// A model of a Git patch
 message Patch {
-  // The contents of a Git patch file
+  // The contents of a Git patch file.
   bytes patch = 1;
 }
 
+// A host-agnostic identifier for a file in a project. This can identify to any type of file, but
+// commonly identifies scripts. Scripts, like all types of files, are identified entirely by their
+// extension (e.g. `.groovy` for Groovy scripts).
+//
 // Next: 3
-// The host-agnostic identifier for a file in a project
 message FileSpec {
-  // The project containing the file
+  // The project containing the file.
   ProjectSpec project = 1;
 
-  // The relative path to the file within the repository
+  // The relative path to the file within the repository. This must use `/` as the path separator
+  // character.
   string path = 2;
 }
 
+// The request message for a clearing the GitFS cache. The kernel may clear the cache at any time,
+// but this request can be used to force the kernel to clear the cache.
+//
 // Next: 1
-// The request message for a clearing the GitFS cache
 message ClearCacheRequest {}
 
+// The response message for a clearing the GitFS cache.
+//
 // Next: 1
-// The response message for a clearing the GitFS cache
 message ClearCacheResponse {}
 
-// The GitFS service
+// The GitFS service manages some aspects of the kernel's Git-based filesystem. The complete GitFS
+// API is available inside scripts; only select behaviors are exposed here.
 service GitFS {
   rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse);
 }

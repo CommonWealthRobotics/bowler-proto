@@ -19,27 +19,33 @@ package bowler.lifecycle;
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.lifecycle";
 
+// The request message for a keepalive ping.
+//
 // Next: 1
-// The request message for a keepalive ping
 message KeepaliveRequest {}
 
+// The response message for a keepalive ping.
+//
 // Next: 1
-// The response message for a keepalive ping
 message KeepaliveResponse {}
 
+// The request message for querying the kernel's JDWB port.
+//
 // Next: 1
-// The request message for querying the kernel's JDWB port
 message DebugPortRequest {}
 
+// The response message for querying the kernel's JDWB port.
+//
 // Next: 2
-// The response message for querying the kernel's JDWB port
-message DebugPortResponse { int32 port = 1; }
+message DebugPortResponse {
+  int32 port = 1;
+}
 
-// The kernel lifecycle service
+// The kernel lifecycle service.
 service Lifecycle {
-  // Pings a server to ensure that it remains active
+  // Pings a server to ensure that it remains active.
   rpc Keepalive(KeepaliveRequest) returns (KeepaliveResponse);
 
-  // Queries the kernel's JDWB port
+  // Queries the kernel's JDWB port.
   rpc DebugPort(DebugPortRequest) returns (DebugPortResponse);
 }
