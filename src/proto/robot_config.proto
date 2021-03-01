@@ -112,6 +112,7 @@ message Vitamin {
 message ConfiguredPluginWithVitamin {
   plugin.ConfiguredPlugin plugin = 1;
   Vitamin vitamin = 2;
+  Pose pose = 3;
 }
 
 // A parallel group is a group of limbs that form a parallel mechanism (or any
