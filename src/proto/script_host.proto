@@ -51,11 +51,9 @@ message RunRequest {
   map<string, string> environment = 4;
 }
 
-// TODO: Add a way for the server to send script stdout and stderr to the
-// TODO: client while the script runs and when it finishes.
 // Returned as a stream from a RunRequest.
 //
-// Next: 9
+// Next: 10
 message RunResponse {
   oneof message {
     // Indicates a new task starting. A task represents a unit of work smaller than the running
@@ -70,6 +68,12 @@ message RunResponse {
 
     // Indicates that a task ended (successfully or not).
     TaskEnd task_end = 3;
+
+    // A slice of the script's stdout and stderr. This may be sent while the script is running to
+    // provide some real-time feedback to the user. Each one of these messages should be assembled
+    // in the order in which they are received to form the complete stdout and stderr. Two
+    // back-to-back messages will not contain any overlap.
+    IntermediateOutput intermediate_output = 9;
 
     // Result from a successful script exit. This is a terminal state; the request ends with this
     // message.
@@ -197,14 +201,35 @@ enum TaskEndCause {
   TASK_CANCELLED = 3;
 }
 
-// The complete state of the script's output directory when it is finished running.
+// A slice of the script's stdout and stderr. The contents of this message only make sense in the
+// context of a stream in which 0..* of these messages may be sent in order. Each one of these
+// messages should be assembled in the order in which they are received to form the complete stdout
+// and stderr. Two back-to-back messages will not contain any overlap.
 //
-// Next: 4
+// Next: 3
+message IntermediateOutput {
+  // The data the script wrote to stdout.
+  string stdout = 1;
+
+  // The data the script wrote to stderr.
+  string stderr = 2;
+}
+
+// The complete state of the script's output when it has finished running.
+//
+// Next: 6
 message ScriptOutput {
-  // Stringified output from the script. This is some descriptive string showing
-  // the script output. Any richer output data should be put into files the
-  // script's output directory.
+  // The (stringified) return value from the script. Any richer output data should be put into files
+  // inside the script's output directory.
   string output = 2;
+
+  // The data the script wrote to stdout. This string may be truncated if it is too long; the
+  // maximum buffer length is determined by the kernel.
+  string stdout = 4;
+
+  // The data the script wrote to stderr. This string may be truncated if it is too long; the
+  // maximum buffer length is determined by the kernel.
+  string stderr = 5;
 
   // A compressed tarball containing the output files.
   bytes tarball = 3;

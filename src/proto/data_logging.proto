@@ -55,15 +55,15 @@ message WatchResponse {
 
 // Wrapper message for the source union.
 //
-// Next: 12
+// Next: 13
 message Value {
   // The value
   oneof value {
     // A 32-bit signed integer value.
-    fixed32 int32 = 1;
+    sfixed32 int32 = 1;
 
     // A 64-bit signed integer value.
-    fixed64 int64 = 2;
+    sfixed64 int64 = 2;
 
     // A 32-bit floating point value.
     float float = 3;
@@ -80,7 +80,7 @@ message Value {
     // A string value.
     string string = 7;
 
-    // A 3D frame transformation.
+    // A 4x4 frame transformation matrix.
     bytes frame_transform = 8;
 
     // A list of values.
@@ -91,6 +91,9 @@ message Value {
 
     // An arbitrary bytestring.
     bytes bytes = 11;
+
+    // Optimized message for storing the robot's configuration space.
+    ConfigurationSpaceCoordinate configuration_space_coordinate = 12;
   }
 }
 
@@ -110,20 +113,15 @@ message Map {
   map<string, Value> items = 1;
 }
 
-// The request message for watching the state vector.
+// Optimized message for storing the robot's configuration space.
 //
-// Next: 1
-message WatchStateRequest {}
-
-// The response message for watching the state vector.
-//
-// Next: 3
-message WatchStateResponse {
-  // The timestamp of the state vector.
-  google.protobuf.Timestamp timestamp = 1;
-
-  // The components of the state vector.
-  repeated float components = 2;
+// Next: 2
+message ConfigurationSpaceCoordinate {
+  // A coordinate in the robot's configuration space (i.e. all the joint values of the robot). The
+  // order of the values in this coordinate is a depth-first iteration order (starting with the
+  // primary base specified in the RobotConfig; i.e. base -> limb -> link -> (optional) base ->
+  // joint value).
+  repeated float values = 1;
 }
 
 // The data logging service.
@@ -133,7 +131,4 @@ service DataLogging {
 
   // Watches a particular data source.
   rpc Watch(WatchRequest) returns (stream WatchResponse);
-
-  // Watches the state vector.
-  rpc WatchState(WatchStateRequest) returns (stream WatchStateResponse);
 }

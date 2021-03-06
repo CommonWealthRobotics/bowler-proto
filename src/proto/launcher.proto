@@ -103,8 +103,21 @@ service Launcher {
   // 1. Send a StartFileTransferRequest message.
   // 2. Send 0..* FileFragment messages.
   // 3. Send a CompleteFileTransferRequest or an AbortFileTransferRequest message.
+  //
+  // Transfers that do not follow this order will be aborted.
   rpc TransferNewKernel(stream FileTransferContainer) returns (FileTransferResponse);
 
-  // Updates the kernel.
+  // Updates the kernel. If the request is accepted, the response will be returned successfully and
+  // the kernel will begin the update process. If the request is not accepted, the RPC will be
+  // cancelled.
+  //
+  // The update process behaves as follows:
+  //
+  // 1. The old (i.e. currently running) kernel will shut down and terminate.
+  // 2. The kernel updater will attempt to switch over to the new kernel at the given file path.
+  // 3. If the kernel updater successfully starts the new kernel, the update will be confirmed and
+  // the new kernel will become the default kernel. If the updater cannot start the new kernel, the
+  // update will be aborted, the old kernel will remain the default kernel, and the old kernel will
+  // be started again.
   rpc UpdateKernel(UpdateKernelRequest) returns (UpdateKernelResponse);
 }

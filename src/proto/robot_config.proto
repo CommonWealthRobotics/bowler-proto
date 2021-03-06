@@ -156,6 +156,7 @@ message Base {
   CenterOfMass center_of_mass = 4;
 
   // The CAD scripts that, in union, generate this base.
+  // TODO: Define the interface this script must implement.
   repeated git_f_s.FileSpec cad = 5;
 }
 
@@ -177,6 +178,7 @@ message Limb {
   ParallelGroupData parallel = 4;
 
   // The controller for this limb.
+  // TODO: Define the interface this script must implement.
   git_f_s.FileSpec limb_controller = 5;
 
   // The type of this limb.
@@ -185,6 +187,7 @@ message Limb {
   // The CAD scripts that, in union, generate this limb.
   // TODO: Define how multiple CAD scripts are invoked and how their outputs are combined.
   // TODO: Also define what happens if multiple CAD scripts change the robot config.
+  // TODO: Define the interface this script must implement.
   repeated git_f_s.FileSpec cad = 7;
 }
 
@@ -262,5 +265,6 @@ message RobotConfig {
   Base primary_base = 2;
 
   // The body controllers. Only one may be ran at a time.
+  // TODO: Define the interface this script must implement.
   repeated git_f_s.FileSpec body_controller = 3;
 }
