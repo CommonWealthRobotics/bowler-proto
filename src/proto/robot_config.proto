@@ -141,7 +141,7 @@ message ParallelGroupData {
 
 // A base is an anchor for limbs.
 //
-// Next: 6
+// Next: 7
 message Base {
   // A human-friendly name.
   string name = 1;
@@ -155,14 +155,18 @@ message Base {
   // The center of mass of this base without any limbs attached.
   CenterOfMass center_of_mass = 4;
 
-  // The CAD scripts that, in union, generate this base.
+  // The CAD scripts that can be used to generate this base.
   // TODO: Define the interface this script must implement.
-  repeated git_f_s.FileSpec cad = 5;
+  // TODO: Define what happens if multiple CAD scripts change the robot config.
+  repeated git_f_s.FileSpec cad_scripts = 5;
+
+  // The selected CAD script that will be used to generate this base. This is a 1-based index.
+  fixed32 cad_script_index = 6;
 }
 
 // A limb of the robot.
 //
-// Next: 8
+// Next: 9
 message Limb {
   // A human-friendly name.
   string name = 1;
@@ -184,11 +188,13 @@ message Limb {
   // The type of this limb.
   LimbType type = 6;
 
-  // The CAD scripts that, in union, generate this limb.
-  // TODO: Define how multiple CAD scripts are invoked and how their outputs are combined.
-  // TODO: Also define what happens if multiple CAD scripts change the robot config.
+  // The CAD scripts that can be used to generate this limb.
   // TODO: Define the interface this script must implement.
-  repeated git_f_s.FileSpec cad = 7;
+  // TODO: Define what happens if multiple CAD scripts change the robot config.
+  repeated git_f_s.FileSpec cad_scripts = 7;
+
+  // The selected CAD script that will be used to generate this limb. This is a 1-based index.
+  fixed32 cad_script_index = 8;
 }
 
 // A link of a limb.
@@ -255,7 +261,7 @@ message Link {
 // The full configuration describing a robot. This configuration is all that is needed to produce a
 // complete robot including (but not limited to) CAD geometry, controls, and device software.
 //
-// Next: 4
+// Next: 5
 message RobotConfig {
   // The devices connected to the robot. Each is specified with a unique ID that
   // is referenced later by the links.
@@ -264,7 +270,11 @@ message RobotConfig {
   // The primary base from which the robot is typically controlled.
   Base primary_base = 2;
 
-  // The body controllers. Only one may be ran at a time.
+  // The body controllers that can be used to control the robot. Only one may be ran at a time.
   // TODO: Define the interface this script must implement.
-  repeated git_f_s.FileSpec body_controller = 3;
+  repeated git_f_s.FileSpec body_controllers = 3;
+
+  // The selected body controller script that will be used to control the robot. This is a 1-based
+  // index.
+  fixed32 body_controller_index = 4;
 }
