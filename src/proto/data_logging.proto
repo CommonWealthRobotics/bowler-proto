@@ -21,110 +21,114 @@ import "google/protobuf/timestamp.proto";
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.data_logging";
 
+// The request message for listing sources.
+//
 // Next: 1
-// The request message for listing sources
 message ListSourcesRequest {}
 
+// The response message for listing sources.
+//
 // Next: 2
-// The response message for listing sources
 message ListSourcesResponse {
-  // The available sources
+  // The available sources.
   repeated string sources = 1;
 }
 
+// The request message for watching a source.
+//
 // Next: 2
-// The request message for watching a source
 message WatchRequest {
-  // The ID of the source to watch
+  // The ID of the source to watch.
   string source_name = 1;
 }
 
+// The response message for watching a source.
+//
 // Next: 3
-// The response message for watching a source
 message WatchResponse {
-  // The timestamp of the data entry
+  // The timestamp of the data entry.
   google.protobuf.Timestamp timestamp = 1;
 
-  // The value of the source
+  // The value of the source.
   Value value = 2;
 }
 
-// Next: 12
-// Wrapper message for the source union
+// Wrapper message for the source union.
+//
+// Next: 13
 message Value {
   // The value
   oneof value {
-    // A 32-bit signed integer value
-    fixed32 int32 = 1;
+    // A 32-bit signed integer value.
+    sfixed32 int32 = 1;
 
-    // A 64-bit signed integer value
-    fixed64 int64 = 2;
+    // A 64-bit signed integer value.
+    sfixed64 int64 = 2;
 
-    // A 32-bit floating point value
+    // A 32-bit floating point value.
     float float = 3;
 
-    // A 64-bit floating point value
+    // A 64-bit floating point value.
     double double = 4;
 
-    // A unicode character
+    // A unicode character.
     uint32 char = 5;
 
-    // A boolean value
+    // A boolean value.
     bool bool = 6;
 
-    // A string value
+    // A string value.
     string string = 7;
 
-    // A 3D frame transformation
+    // A 4x4 frame transformation matrix.
     bytes frame_transform = 8;
 
-    // A list of values
+    // A list of values.
     List list = 9;
 
-    // A map of strings to values
+    // A map of strings to values.
     Map map = 10;
 
-    // An arbitrary bytestring
+    // An arbitrary bytestring.
     bytes bytes = 11;
+
+    // Optimized message for storing the robot's configuration space.
+    ConfigurationSpaceCoordinate configuration_space_coordinate = 12;
   }
 }
 
+// Wrapper message for a list of values.
+//
 // Next: 2
-// Wrapper message for a list of values
 message List {
-  // The values in the list
+  // The values in the list.
   repeated Value items = 1;
 }
 
+// Wrapper message for a map of strings to values.
+//
 // Next: 2
-// Wrapper message for a map of strings to values
 message Map {
-  // The keys and values in the map
+  // The keys and values in the map.
   map<string, Value> items = 1;
 }
 
-// Next: 1
-// The request message for watching the state vector
-message WatchStateRequest {}
-
-// Next: 3
-// The response message for watching the state vector
-message WatchStateResponse {
-  // The timestamp of the state vector
-  google.protobuf.Timestamp timestamp = 1;
-
-  // The components of the state vector
-  repeated float components = 2;
+// Optimized message for storing the robot's configuration space.
+//
+// Next: 2
+message ConfigurationSpaceCoordinate {
+  // A coordinate in the robot's configuration space (i.e. all the joint values of the robot). The
+  // order of the values in this coordinate is a depth-first iteration order (starting with the
+  // primary base specified in the RobotConfig; i.e. base -> limb -> link -> (optional) base ->
+  // joint value).
+  repeated float values = 1;
 }
 
-// The data logging service
+// The data logging service.
 service DataLogging {
-  // Lists the available data sources
+  // Lists the available data sources.
   rpc ListSources(ListSourcesRequest) returns (ListSourcesResponse);
 
-  // Watches a particular data source
+  // Watches a particular data source.
   rpc Watch(WatchRequest) returns (stream WatchResponse);
-
-  // Watches the state vector
-  rpc WatchState(WatchStateRequest) returns (stream WatchStateResponse);
 }

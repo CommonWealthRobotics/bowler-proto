@@ -19,51 +19,105 @@ package bowler.launcher;
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.launcher";
 
-// Next: 2
-// The request message for a service configuration RPC
-message ConfigureServiceRequest {
-  // True if the kernel service should be enabled on startup
-  bool serviceEnabledOnStartup = 1;
+// Contains the possible messages of a file transfer.
+message FileTransferContainer {
+  oneof message {
+    StartFileTransferRequest start = 1;
+    FileFragment fragment = 2;
+    CompleteFileTransferRequest complete = 3;
+    AbortFileTransferRequest abort = 4;
+  }
 }
 
-// Next: 1
-// The response message for a service configuration RPC
-message ConfigureServiceResponse {}
-
+// Starts a file transfer request. Upon completion of the request, a new file will be present at the
+// given `path`.
+//
 // Next: 2
-// A part of a file being transferred
-message FileFragment { bytes data = 1; }
-
-// Next: 3
-// The response message for a new kernel transfer RPC
-message TransferNewKernelResponse {
-  // The hash of the received file
-  bytes sha3_224 = 1;
-  // The path to the received file
-  string path = 2;
-}
-
-// Next: 2
-// The request message for a kernel update RPC
-message UpdateKernelRequest {
-  // The path to the new kernel file
+message StartFileTransferRequest {
+  // The requested path of the new file.
   string path = 1;
 }
 
+// A part of a file being transferred.
+//
+// Next: 3
+message FileFragment {
+  // A unique ID assigned to this fragment.
+  int64 id = 2;
+
+  // A chunk of data. If this is empty, then this fragment indicates the end of the file stream.
+  bytes data = 1;
+}
+
+// Completes a file transfer. Upon completion, the kernel will assemble the transferred
+// FileFragments in the order given by this message.
+//
+// Next: 2
+message CompleteFileTransferRequest {
+  // The order in which the transferred FileFragments must be assembled.
+  //
+  // If any IDs specified here are not present among the FileFragments, the file transfer request
+  // will be aborted as if an AbortFileTransferRequest was sent.
+  //
+  // Not all FileFragments must be used. Any FileFragments that are not referenced by this list of
+  // IDs will be discarded once the file transfer request is complete.
+  //
+  // This list may be empty, in which case the kernel will create an empty file.
+  repeated int64 ids = 1;
+}
+
+// Immediately ends the file transfer. The kernel will discard any FileFragments that have been
+// transferred. No new files will be present on disk after the transfer is aborted.
+//
 // Next: 1
-// The response message for a kernel update RPC
+message AbortFileTransferRequest {}
+
+// The response message for a new kernel transfer RPC.
+//
+// Next: 3
+message FileTransferResponse {
+  // The hash of the received file.
+  bytes sha3_224 = 1;
+
+  // The path to the received file.
+  string path = 2;
+}
+
+// The request message for a kernel update RPC.
+//
+// Next: 2
+message UpdateKernelRequest {
+  // The path to the new kernel file. This file must be on the kernel's local filesystem.
+  string path = 1;
+}
+
+// The response message for a kernel update RPC.
+//
+// Next: 1
 message UpdateKernelResponse {}
 
-// The kernel launcher service
+// The kernel launcher service. This manages
 service Launcher {
-  // Configures the kernel service
-  rpc ConfigureService(ConfigureServiceRequest)
-      returns (ConfigureServiceResponse);
+  // Transfers a new kernel file. The transfer process behaves as follows:
+  //
+  // 1. Send a StartFileTransferRequest message.
+  // 2. Send 0..* FileFragment messages.
+  // 3. Send a CompleteFileTransferRequest or an AbortFileTransferRequest message.
+  //
+  // Transfers that do not follow this order will be aborted.
+  rpc TransferNewKernel(stream FileTransferContainer) returns (FileTransferResponse);
 
-  // Transfers a new kernel file
-  rpc TransferNewKernel(stream FileFragment)
-      returns (TransferNewKernelResponse);
-
-  // Updates the kernel
+  // Updates the kernel. If the request is accepted, the response will be returned successfully and
+  // the kernel will begin the update process. If the request is not accepted, the RPC will be
+  // cancelled.
+  //
+  // The update process behaves as follows:
+  //
+  // 1. The old (i.e. currently running) kernel will shut down and terminate.
+  // 2. The kernel updater will attempt to switch over to the new kernel at the given file path.
+  // 3. If the kernel updater successfully starts the new kernel, the update will be confirmed and
+  // the new kernel will become the default kernel. If the updater cannot start the new kernel, the
+  // update will be aborted, the old kernel will remain the default kernel, and the old kernel will
+  // be started again.
   rpc UpdateKernel(UpdateKernelRequest) returns (UpdateKernelResponse);
 }
