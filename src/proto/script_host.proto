@@ -56,11 +56,7 @@ message RunRequest {
 // Next: 10
 message RunResponse {
   oneof message {
-    // Indicates a new task starting. A task represents a unit of work smaller than the running
-    // script. Tasks are used only to provide transparency to the user. Tasks are not meant to be
-    // used programmatically in any way (other than to display their status to the user). All tasks
-    // must end before their parent script ends. 0..* tasks can be started from any run request.
-    // Task IDs are unique within the scope of the request, but may not be globally unique.
+    // Indicates a new task starting.
     NewTask new_task = 1;
 
     // Indicates an update to the status of a task.
@@ -70,9 +66,7 @@ message RunResponse {
     TaskEnd task_end = 3;
 
     // A slice of the script's stdout and stderr. This may be sent while the script is running to
-    // provide some real-time feedback to the user. Each one of these messages should be assembled
-    // in the order in which they are received to form the complete stdout and stderr. Two
-    // back-to-back messages will not contain any overlap.
+    // provide some real-time feedback to the user.
     IntermediateOutput intermediate_output = 9;
 
     // Result from a successful script exit. This is a terminal state; the request ends with this
@@ -85,17 +79,31 @@ message RunResponse {
   }
 }
 
-// Generates and validates the robot CAD. The robot's CAD is defined as a function that maps the
-// robot config to a set of CAD objects and a (possibly different) robot config. This function is
-// called the CAD generator; it is implemented by a script and therefore specified by a FileSpec.
-// The CAD generator is not allowed to select any primary vitamins. All the primary vitamins are
-// specified in the robot config and are immutable as far as the CAD generator is concerned.
-// Primary vitamin optimization, along with other config optimizations (e.g. DH parameters), may be
-// implemented at a higher level. The CAD generator is, however, allowed to select any secondary
-// vitamins it requires. The CAD generator is also allowed to adjust noncritical aspects of the
-// robot configuration (e.g. joint limits) when required. The client is encouraged to show any robot
-// config adjustments through some visual means so that config changes are immediately obvious to
-// the user.
+// A request to generate and validate the robot CAD. The robot's CAD is defined as a function that
+// maps the robot config to a set of CAD objects and a (possibly different) robot config. This
+// function is called the CAD generator; it is implemented by a script and therefore specified by a
+// FileSpec.
+//
+// Bowler's use of CAD generation to model the robot is architected in this way so that the robot
+// config may be optimized (outside of the Bowler stack) inside the engineering design loop. For
+// example, the selection of actuators and DH parameters may be optimized by some program and the
+// results of the optimization entered into the robot config. A new robot is generated from this
+// config and evaluated in the simulator. Design optimization and iteration may continue while
+// select configs are built for real and evaluated.
+//
+// To this end, it would be overwhelmingly complex to need to optimize every single vitamin and
+// every single vertex of CAD geometry. Therefore, the CAD generator must make all the low-impact
+// decisions, such as generating the CAD geometry according to a certain preprogrammed scheme and
+// selecting secondary vitamins (see the Vitamin message for the definition of primary and secondary
+// vitamins). The CAD generator is also allowed to adjust minor aspects of the robot configuration
+// (e.g. joint limits) when required. For example, after two links of a series actuator are
+// generated, the CAD generator may detect a collision in the range of motion of the joint
+// connecting those links. The CAD generator is allowed to adjust the joint limits in this case,
+// though it will likely also modify the CAD such that the range of motion of that joint is
+// maximized.
+//
+// The client is encouraged to show any robot config adjustments through some visual means so that
+// config changes are immediately obvious to the user.
 //
 // Next: 4
 message GenerateAndValidateCADRequest {
@@ -113,10 +121,7 @@ message GenerateAndValidateCADRequest {
 // Next: 7
 message GenerateAndValidateCADResponse {
   oneof message {
-    // Message to indicate a new task starting. 0..* tasks can be started from
-    // any client request. Task IDs will be unique at least within the scope of
-    // the request, but may not be globally unique. Tasks started during a
-    // request will not exist past the end of that request.
+    // Indicates a new task starting.
     NewTask new_task = 1;
 
     // Message to indicate an update to the status of a task.
@@ -146,7 +151,12 @@ message GenerateAndValidateCADOutput {
   bowler.robot_config.RobotConfig config = 2;
 }
 
-// Server message to indicate a new task starting.
+// Indicates a new task starting. A task represents a unit of work smaller than the running
+// script. Tasks are used only to provide transparency to the user. Tasks are not meant to be
+// used programmatically in any way (other than to display their status to the user). All tasks
+// will end before their parent request ends. 0..* tasks may be started from a request.
+// Tasks IDs are unique within the scope of the request that started them, but may not be globally
+// unique.
 //
 // Next: 4
 message NewTask {
@@ -165,7 +175,7 @@ message TaskUpdate {
   // scope of the request, but may not be globally unique.
   int64 task_id = 1;
 
-  // The progress of the task.
+  // The current progress of the task.
   float progress = 2;
 }
 
@@ -179,9 +189,9 @@ message TaskEnd {
   // The reason the task ended.
   TaskEndCause cause = 2;
 
-  // If the task completed erroneously, set this field to a description of the
-  // error. Typically, the server should also close the session with a
-  // RequestError. If the task completed successfully, leave this field empty.
+  // If the task completed erroneously, this field will be set to a description of the
+  // error. The server may also close the session with a RequestError. If the task completed
+  // successfully, this will be field empty.
   string error = 3;
 }
 

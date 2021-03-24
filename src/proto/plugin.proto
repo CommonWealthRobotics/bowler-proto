@@ -21,15 +21,14 @@ import "git_f_s.proto";
 option java_multiple_files = true;
 option java_package = "com.commonwealthrobotics.proto.plugin";
 
-// A request to search the plugin registry for plugins matching the keywords.
+// A request to search a plugin registry for all plugins matching the keywords.
 //
 // Next: 5
 message SearchRequest {
-  // Any keywords to use in the search. These can be exact keywords or fuzzy
-  // strings.
+  // Any keywords to use in the search. These are regex patterns.
   repeated string keywords = 1;
 
-  // The Git remote of the plugin registry.
+  // The Git remote of the plugin registry. This can be an HTTPS or SSH URL.
   string registry_remote = 2;
 
   // The maximum number of plugins to include in the response. Between zero and
@@ -80,9 +79,10 @@ message ConfigurationResponse {
   string configuration = 1;
 }
 
-// Next: 4
 // A fully configured plugin that is (potentially) ready to be loaded by the
 // kernel.
+//
+// Next: 4
 message ConfiguredPlugin {
   // The plugin.
   git_f_s.FileSpec plugin = 1;
