@@ -15,8 +15,8 @@ option java_package = "com.commonwealthrobotics.proto.policy";
 // Action and resource specifiers are colon-separated strings. Each component of the string (between
 // colons) must follow this format:
 //
-// - The component may contain simple alphanumerics (a-z, A-Z, 0-9), hyphens (-), and underscores
-// (_).
+// - The component may contain simple alphanumerics (a-z, A-Z, 0-9), hyphens (-), underscores
+// (_), periods (.) and forward slashes (/).
 // - The component may not contain colons (:).
 // - The component may contain zero or one wildcard characters (*). The component must end
 // immedately following the wildcard character. The part of the component before the wildcard
