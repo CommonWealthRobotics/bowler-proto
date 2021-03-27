@@ -16,7 +16,7 @@ option java_package = "com.commonwealthrobotics.proto.policy";
 // colons) must follow this format:
 //
 // - The component may contain simple alphanumerics (a-z, A-Z, 0-9), hyphens (-), underscores
-// (_), and periods (.).
+// (_), periods (.) and forward slashes (/).
 // - The component may not contain colons (:).
 // - The component may contain zero or one wildcard characters (*). The component must end
 // immedately following the wildcard character. The part of the component before the wildcard
