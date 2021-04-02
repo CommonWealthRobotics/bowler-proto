@@ -35,13 +35,12 @@ option java_package = "com.commonwealthrobotics.proto.policy";
 // defined in multiple policies and one of the policies is a deny, that action-resource pair is
 // always denied.
 //
-// Next: 3
+// Next: 4
 message PolicyDocument {
   // A version number indicating the bowler-proto version this policy was written in. This may
   // determine how the policy is parsed. Check the bowler-proto releases for information on how
-  // versions may differ. This must be a valid semver version according to Semantic Versioning 2.0
-  // [here](https://semver.org/).
-  string version = 1;
+  // versions may differ. This must be a valid date of the form `yyyy-mm-dd`.
+  string version = 3;
 
   // The statements that this policy is comprised of.
   repeated PolicyContainer statements = 2;
