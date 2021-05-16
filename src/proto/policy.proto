@@ -28,12 +28,10 @@ option java_package = "com.commonwealthrobotics.proto.policy";
 // - `github:repo:MyOrg/RepoPrefix*`
 // - `github:repo:MyOrg/*`
 // - `github:repo:*`
-// - `*:*:*`
+// - `*`
 //
 // The kernel will operate within the boundaries set by this policy document. If a permission is
-// not granted to the kernel by this document, it is denied. If a given action-resource pair is
-// defined in multiple policies and one of the policies is a deny, that action-resource pair is
-// always denied.
+// not granted to the kernel by this document, it is denied.
 //
 // Next: 4
 message PolicyDocument {
@@ -76,7 +74,7 @@ message ActionPolicy {
   repeated string actions = 2;
 
   // The resources the actions may act on. All the resources specified here must have the same type
-  // as those specified in the actions. There must be exactly one resource specified here for every
+  // as those specified in the actions. There must be at least one resource specified here for every
   // resource mentioned in the actions. The resource schema is: `<type>:<scope>:<name>`. For
   // example, `uc:file:/dev/sda` specifies the microcontroller mounted as the `/dev/sda` file.
   //
@@ -105,12 +103,11 @@ message ActionPolicy {
 // to authenticate to them. For example, this policy may specify that the kernel is allowed to clone
 // a GitHub repository in a specific GitHub organization using a specific API key.
 //
-// When authenticating to a scope, the kernel will always try to use anonymous access. Failing that,
-// it will use the credentials specified in the relevant policy. The kernel will not attempt to
-// authenticate to a scope for which it is denied to authenticate.
+// When authenticating to a scope, the kernel will use the credentials specified in the relevant policy.
+// The kernel will not attempt to authenticate to a scope for which it is denied to authenticate.
 //
 // By default, all scopes are blocked, including for anonymous access. This may be subverted by
-// supplying a blanket policy with anonymous access to all scopes (`*:*`).
+// supplying a blanket policy with anonymous access to all scopes (`*`).
 //
 // Next: 3
 message CredentialPolicy {
